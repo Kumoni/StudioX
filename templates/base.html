@@ -4,30 +4,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Танцевальная студия 1MILLION — премиальное пространство танца в центре города. Расписание, запись онлайн, сертифицированные хореографы и 4 оборудованных зала.">
-  <title>{% block title %}1MILLION STUDIO — Твой ритм, твоя свобода{% endblock %}</title>
+  <meta name="description" content="Танцевальная студия X — премиальное пространство танца в центре города. 4 зала, сертифицированные хореографы, гибкая система онлайн-записи и абонементов.">
+  <title>{% block title %}Студия X — Твой ритм, твоя свобода{% endblock %}</title>
+  
+  <!-- Шрифты Google Fonts: Montserrat (заголовки) и Inter (интерфейс) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+  
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
   {% block extra_head %}{% endblock %}
 </head>
 <body>
 
-  <!-- Шапка сайта -->
+  <!-- Белая контрастная шапка по макету Figma X -->
   <header class="site-header">
     <div class="container header-inner">
-      <a href="{% url 'home' %}" class="logo" aria-label="1MILLION STUDIO Главная">
-        <span class="logo-badge">1M</span>
-        <span class="logo-text"><strong class="logo-accent">1MILLION</strong> STUDIO</span>
+      <!-- Логотип: оранжевая точка + X -->
+      <a href="{% url 'home' %}" class="logo" aria-label="Студия танцев X">
+        <span class="logo-dot" aria-hidden="true"></span>
+        <span class="logo-letter">X</span>
       </a>
 
-      <!-- Кнопка мобильного меню -->
-      <button type="button" class="burger-btn" id="burgerBtn" aria-label="Открыть меню навигации" aria-expanded="false" aria-controls="siteNav">
+      <!-- Кнопка мобильного гамбургера -->
+      <button type="button" class="burger-btn" id="burgerBtn" aria-label="Открыть навигационное меню" aria-expanded="false" aria-controls="siteNav">
         <span class="burger-line"></span>
         <span class="burger-line"></span>
         <span class="burger-line"></span>
       </button>
 
-      <!-- Навигация -->
-      <nav class="site-nav" id="siteNav" aria-label="Основная навигация">
+      <!-- Основная навигация десктоп -->
+      <nav class="site-nav" id="siteNav" aria-label="Навигация сайта">
         <ul class="nav-list">
           <li class="nav-item">
             <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Главная</a>
@@ -39,25 +46,26 @@
             <a href="{% url 'styles' %}" class="nav-link {% if request.resolver_match.url_name == 'styles' %}active{% endif %}">Направления</a>
           </li>
           <li class="nav-item">
+            <a href="{% url 'styles' %}#teachers" class="nav-link">Хореографы</a>
+          </li>
+          <li class="nav-item">
             <a href="{% url 'tariffs' %}" class="nav-link {% if request.resolver_match.url_name == 'tariffs' %}active{% endif %}">Тарифы</a>
           </li>
-          <li class="nav-item">
-            <a href="{% url 'profile' %}" class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">Личный кабинет</a>
-          </li>
-          <li class="nav-item">
-            <a href="{% url 'journal' %}" class="nav-link {% if request.resolver_match.url_name == 'journal' %}active{% endif %}">Журнал</a>
+          <li class="nav-item nav-item-mobile-only">
+            <a href="{% url 'journal' %}" class="nav-link {% if request.resolver_match.url_name == 'journal' %}active{% endif %}">Журнал педагога</a>
           </li>
         </ul>
       </nav>
 
-      <!-- Кнопка записи в шапке -->
+      <!-- Действия в шапке: Кабинет и Записаться -->
       <div class="header-actions">
-        <a href="{% url 'schedule' %}" class="btn btn-primary btn-sm">Записаться</a>
+        <a href="{% url 'profile' %}" class="btn btn-secondary btn-header-cabinet">Кабинет</a>
+        <a href="{% url 'schedule' %}" class="btn btn-primary btn-header-book">Записаться</a>
       </div>
     </div>
   </header>
 
-  <!-- Сообщения фреймворка messages -->
+  <!-- Системные уведомления -->
   {% if messages %}
   <aside class="container messages-container" aria-label="Системные уведомления">
     {% for message in messages %}
@@ -77,20 +85,23 @@
   <!-- Подвал сайта -->
   <footer class="site-footer">
     <div class="container footer-grid">
-      <!-- Колонка 1: О студии -->
+      <!-- О студии -->
       <div class="footer-col">
-        <a href="{% url 'home' %}" class="logo footer-logo">
-          <span class="logo-badge">1M</span>
-          <span class="logo-text"><strong class="logo-accent">1MILLION</strong> STUDIO</span>
-        </a>
-        <p class="footer-desc">Премиальное танцевальное пространство в центре города. 4 зала, 18 сертифицированных преподавателей и современная система онлайн-записи.</p>
+        <div class="logo footer-logo">
+          <span class="logo-dot" aria-hidden="true"></span>
+          <span class="logo-letter">X</span>
+          <span class="footer-studio-sub">DANCE STUDIO</span>
+        </div>
+        <p class="footer-desc">
+          Премиальное танцевальное пространство в центре города. 4 зала, 18 сертифицированных преподавателей, онлайн-расписание и удобная система записи.
+        </p>
         <div class="footer-badges">
-          <span class="badge badge-outline">WCAG 2.1 AA</span>
           <span class="badge badge-accent">Отмена за 2 часа</span>
+          <span class="badge badge-outline">WCAG 2.1 AA</span>
         </div>
       </div>
 
-      <!-- Колонка 2: Навигация -->
+      <!-- Навигация -->
       <div class="footer-col">
         <h4 class="footer-title">Разделы портала</h4>
         <ul class="footer-links">
@@ -98,12 +109,12 @@
           <li><a href="{% url 'schedule' %}">Интерактивное расписание</a></li>
           <li><a href="{% url 'styles' %}">Каталог стилей</a></li>
           <li><a href="{% url 'tariffs' %}">Тарифы и абонементы</a></li>
-          <li><a href="{% url 'profile' %}">Кабинет ученика</a></li>
-          <li><a href="{% url 'journal' %}">Кабинет хореографа</a></li>
+          <li><a href="{% url 'profile' %}">Личный кабинет ученика</a></li>
+          <li><a href="{% url 'journal' %}">Журнал преподавателя</a></li>
         </ul>
       </div>
 
-      <!-- Колонка 3: Залы и оснащение -->
+      <!-- Залы студии -->
       <div class="footer-col">
         <h4 class="footer-title">Залы студии</h4>
         <ul class="footer-links">
@@ -114,26 +125,45 @@
         </ul>
       </div>
 
-      <!-- Колонка 4: Контакты -->
+      <!-- Контакты и правила -->
       <div class="footer-col">
-        <h4 class="footer-title">Контакты и регламент</h4>
+        <h4 class="footer-title">Контакты и правила</h4>
         <address class="footer-contacts">
           <p><strong>Адрес:</strong> г. Москва, ул. Танцевальная, д. 10</p>
           <p><strong>Телефон:</strong> <a href="tel:+79000000000">+7 (900) 000-00-00</a></p>
-          <p><strong>Email:</strong> <a href="mailto:info@1million-dance.ru">info@1million-dance.ru</a></p>
+          <p><strong>Email:</strong> <a href="mailto:info@dance-studio.ru">info@dance-studio.ru</a></p>
           <p><strong>Часы работы:</strong> ежедневно с 09:00 до 22:00</p>
         </address>
       </div>
     </div>
 
-    <!-- Копирайт -->
     <div class="footer-bottom">
       <div class="container footer-bottom-inner">
-        <p class="copyright">© 2026 Танцевальная студия 1MILLION. Проектирование и разработка веб-интерфейса.</p>
-        <p class="footer-reglament">Регламент студии: отмена занятия без списания доступна не позднее чем за 2 часа до старта.</p>
+        <p class="copyright">© 2026 Танцевальная студия X. Проектирование и разработка веб-интерфейса.</p>
+        <p class="footer-reglament">Регламент студии: бесплатная отмена записи доступна не позднее чем за 2 часа до начала урока.</p>
       </div>
     </div>
   </footer>
+
+  <!-- Мобильная нижняя панель навигации по макету 1:951 -->
+  <nav class="mobile-bottom-bar" aria-label="Мобильная навигация">
+    <a href="{% url 'home' %}" class="mobile-bar-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+      <span class="mobile-bar-icon">🏠</span>
+      <span class="mobile-bar-label">Главная</span>
+    </a>
+    <a href="{% url 'schedule' %}" class="mobile-bar-item {% if request.resolver_match.url_name == 'schedule' %}active{% endif %}">
+      <span class="mobile-bar-icon">📅</span>
+      <span class="mobile-bar-label">Сетка</span>
+    </a>
+    <a href="{% url 'tariffs' %}" class="mobile-bar-item {% if request.resolver_match.url_name == 'tariffs' %}active{% endif %}">
+      <span class="mobile-bar-icon">💳</span>
+      <span class="mobile-bar-label">Тарифы</span>
+    </a>
+    <a href="{% url 'profile' %}" class="mobile-bar-item {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+      <span class="mobile-bar-icon">👤</span>
+      <span class="mobile-bar-label">Профиль</span>
+    </a>
+  </nav>
 
   <script src="{% static 'js/main.js' %}"></script>
   {% block extra_scripts %}{% endblock %}
