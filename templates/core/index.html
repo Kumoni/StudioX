@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}1MILLION STUDIO — Премиальная танцевальная студия в центре города{% endblock %}
+
+{% block content %}
+<!-- Секция 1: Главный баннер (Hero) -->
+<section class="hero-section" aria-labelledby="hero-title">
+  <div class="container hero-container">
+    <div class="hero-content">
+      <span class="hero-badge badge badge-accent">Премиальное пространство танца</span>
+      <h1 id="hero-title" class="hero-title">
+        <span class="hero-studio-name">1MILLION STUDIO</span>
+        ТВОЙ РИТМ — ТВОЯ СВОБОДА
+      </h1>
+      <p class="hero-description">
+        Современное танцевальное пространство в центре города. 4 профессионально оборудованных зала, сертифицированные хореографы всероссийского уровня и гибкая система онлайн-записи.
+      </p>
+      <div class="hero-actions">
+        <a href="{% url 'schedule' %}" class="btn btn-primary btn-lg">Записаться на урок</a>
+        <a href="#halls" class="btn btn-outline btn-lg">Смотреть залы</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Секция 2: Статистика и ключевые преимущества студии -->
+<section class="stats-section" aria-labelledby="stats-title">
+  <div class="container">
+    <h2 id="stats-title" class="sr-only">Преимущества танцевальной студии 1MILLION</h2>
+    <div class="stats-grid">
+      <!-- Плашка 1: Залы -->
+      <article class="stat-card">
+        <div class="stat-icon-wrapper" aria-hidden="true">
+          <span class="stat-icon">🏛</span>
+        </div>
+        <div class="stat-info">
+          <strong class="stat-value">4 ЗАЛА</strong>
+          <p class="stat-label">Зеркальный, Loft, Body, Choreo</p>
+        </div>
+      </article>
+
+      <!-- Плашка 2: Педагоги -->
+      <article class="stat-card">
+        <div class="stat-icon-wrapper" aria-hidden="true">
+          <span class="stat-icon">★</span>
+        </div>
+        <div class="stat-info">
+          <strong class="stat-value">18 ПЕДАГОГОВ</strong>
+          <p class="stat-label">Победители всероссийских контестов</p>
+        </div>
+      </article>
+
+      <!-- Плашка 3: Ученики -->
+      <article class="stat-card">
+        <div class="stat-icon-wrapper" aria-hidden="true">
+          <span class="stat-icon">👥</span>
+        </div>
+        <div class="stat-info">
+          <strong class="stat-value">1 200+ УЧЕНИКОВ</strong>
+          <p class="stat-label">Активное комьюнити танцоров</p>
+        </div>
+      </article>
+
+      <!-- Плашка 4: Регламент 2 часов -->
+      <article class="stat-card stat-card-accent">
+        <div class="stat-icon-wrapper stat-icon-accent" aria-hidden="true">
+          <span class="stat-icon">⏱</span>
+        </div>
+        <div class="stat-info">
+          <strong class="stat-value">ОТМЕНА ЗА 2 ЧАСА</strong>
+          <p class="stat-label">Без штрафов и сгорания занятий</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- Секция 3: Популярные направления (данные из базы) -->
+<section class="styles-section" aria-labelledby="styles-title">
+  <div class="container">
+    <header class="section-header">
+      <span class="section-tag badge badge-accent">Программы обучения</span>
+      <h2 id="styles-title" class="section-title">Популярные танцевальные направления</h2>
+      <p class="section-subtitle">
+        Подберите стиль по уровню подготовки: от базовых пластических элементов до сложнейших сценических связок.
+      </p>
+    </header>
+
+    <div class="styles-grid">
+      {% for style in styles %}
+      <article class="style-card">
+        <div class="style-header">
+          <span class="badge badge-accent">{{ style.get_difficulty_level_display }}</span>
+          <span class="style-active-pill">Активно</span>
+        </div>
+        <div class="style-body">
+          <h3 class="style-name">{{ style.name }}</h3>
+          <p class="style-desc">
+            {% if style.description %}
+              {{ style.description|truncatewords:18 }}
+            {% else %}
+              Изучение базовой техники, развитие музыкальности, координации и авторской хореографии.
+            {% endif %}
+          </p>
+        </div>
+        <div class="style-footer">
+          <a href="{% url 'schedule' %}" class="btn btn-secondary btn-sm style-btn">Расписание занятий →</a>
+        </div>
+      </article>
+      {% empty %}
+      <p class="empty-state">Список направлений в данный момент формируется.</p>
+      {% endfor %}
+    </div>
+
+    <div class="section-cta-center">
+      <a href="{% url 'styles' %}" class="btn btn-outline-dark btn-md">Смотреть все направления ({{ stats.styles_count }})</a>
+    </div>
+  </div>
+</section>
+
+<!-- Секция 4: Залы студии (данные из базы) -->
+<section class="halls-section" id="halls" aria-labelledby="halls-title">
+  <div class="container">
+    <header class="section-header">
+      <span class="section-tag badge badge-accent">Пространство 1MILLION</span>
+      <h2 id="halls-title" class="section-title">Оборудованные залы студии</h2>
+      <p class="section-subtitle">
+        Амортизирующий паркет для защиты суставов, панорамные зеркала во всю стену и профессиональный звук.
+      </p>
+    </header>
+
+    <div class="halls-grid">
+      {% for hall in halls %}
+      <article class="hall-card">
+        <div class="hall-header">
+          <h3 class="hall-name">{{ hall.name }}</h3>
+          <span class="badge badge-outline-dark">Вместимость: до {{ hall.capacity }} чел.</span>
+        </div>
+        <div class="hall-body">
+          <ul class="hall-features">
+            <li>
+              <span class="feature-check">✓</span>
+              {% if hall.area_sqm %}Площадь: {{ hall.area_sqm }} кв. м{% else %}Просторное пространство{% endif %}
+            </li>
+            <li>
+              <span class="feature-check">✓</span>
+              {% if hall.has_mirrors %}Зеркала во всю стену с контурной подсветкой{% endif %}
+            </li>
+            <li>
+              <span class="feature-check">✓</span>
+              {% if hall.has_sound_system %}Профессиональная акустическая система{% endif %}
+            </li>
+          </ul>
+          {% if hall.description %}
+          <p class="hall-desc">{{ hall.description }}</p>
+          {% endif %}
+        </div>
+      </article>
+      {% empty %}
+      <p class="empty-state">Залы временно недоступны для просмотра.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Секция 5: Баннер правил и призыв к действию (CTA) -->
+<section class="cta-banner-section" aria-labelledby="cta-title">
+  <div class="container">
+    <div class="cta-banner">
+      <div class="cta-content">
+        <span class="badge badge-accent">Удобная система абонементов</span>
+        <h2 id="cta-title" class="cta-title">Готовы начать танцевать в 1MILLION?</h2>
+        <p class="cta-desc">
+          Оформите абонемент онлайн, выберите удобное время в интерактивном расписании и бронируйте уроки в один клик. Помните о регламенте: бесплатная отмена занятия доступна за 2 часа до начала.
+        </p>
+        <div class="cta-buttons">
+          <a href="{% url 'tariffs' %}" class="btn btn-primary btn-lg">Выбрать абонемент</a>
+          <a href="{% url 'schedule' %}" class="btn btn-outline btn-lg">Открыть расписание</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
