@@ -1,0 +1,141 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Танцевальная студия 1MILLION — премиальное пространство танца в центре города. Расписание, запись онлайн, сертифицированные хореографы и 4 оборудованных зала.">
+  <title>{% block title %}1MILLION STUDIO — Твой ритм, твоя свобода{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <!-- Шапка сайта -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="{% url 'home' %}" class="logo" aria-label="1MILLION STUDIO Главная">
+        <span class="logo-badge">1M</span>
+        <span class="logo-text"><strong class="logo-accent">1MILLION</strong> STUDIO</span>
+      </a>
+
+      <!-- Кнопка мобильного меню -->
+      <button type="button" class="burger-btn" id="burgerBtn" aria-label="Открыть меню навигации" aria-expanded="false" aria-controls="siteNav">
+        <span class="burger-line"></span>
+        <span class="burger-line"></span>
+        <span class="burger-line"></span>
+      </button>
+
+      <!-- Навигация -->
+      <nav class="site-nav" id="siteNav" aria-label="Основная навигация">
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Главная</a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'schedule' %}" class="nav-link {% if request.resolver_match.url_name == 'schedule' %}active{% endif %}">Расписание</a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'styles' %}" class="nav-link {% if request.resolver_match.url_name == 'styles' %}active{% endif %}">Направления</a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'tariffs' %}" class="nav-link {% if request.resolver_match.url_name == 'tariffs' %}active{% endif %}">Тарифы</a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'profile' %}" class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">Личный кабинет</a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'journal' %}" class="nav-link {% if request.resolver_match.url_name == 'journal' %}active{% endif %}">Журнал</a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Кнопка записи в шапке -->
+      <div class="header-actions">
+        <a href="{% url 'schedule' %}" class="btn btn-primary btn-sm">Записаться</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Сообщения фреймворка messages -->
+  {% if messages %}
+  <aside class="container messages-container" aria-label="Системные уведомления">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags|default:'info' }}" role="alert">
+      <span class="alert-text">{{ message }}</span>
+      <button type="button" class="alert-close" aria-label="Закрыть уведомление" onclick="this.parentElement.remove()">✕</button>
+    </div>
+    {% endfor %}
+  </aside>
+  {% endif %}
+
+  <!-- Основной контент страницы -->
+  <main id="main-content" class="site-main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Подвал сайта -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <!-- Колонка 1: О студии -->
+      <div class="footer-col">
+        <a href="{% url 'home' %}" class="logo footer-logo">
+          <span class="logo-badge">1M</span>
+          <span class="logo-text"><strong class="logo-accent">1MILLION</strong> STUDIO</span>
+        </a>
+        <p class="footer-desc">Премиальное танцевальное пространство в центре города. 4 зала, 18 сертифицированных преподавателей и современная система онлайн-записи.</p>
+        <div class="footer-badges">
+          <span class="badge badge-outline">WCAG 2.1 AA</span>
+          <span class="badge badge-accent">Отмена за 2 часа</span>
+        </div>
+      </div>
+
+      <!-- Колонка 2: Навигация -->
+      <div class="footer-col">
+        <h4 class="footer-title">Разделы портала</h4>
+        <ul class="footer-links">
+          <li><a href="{% url 'home' %}">Главная страница</a></li>
+          <li><a href="{% url 'schedule' %}">Интерактивное расписание</a></li>
+          <li><a href="{% url 'styles' %}">Каталог стилей</a></li>
+          <li><a href="{% url 'tariffs' %}">Тарифы и абонементы</a></li>
+          <li><a href="{% url 'profile' %}">Кабинет ученика</a></li>
+          <li><a href="{% url 'journal' %}">Кабинет хореографа</a></li>
+        </ul>
+      </div>
+
+      <!-- Колонка 3: Залы и оснащение -->
+      <div class="footer-col">
+        <h4 class="footer-title">Залы студии</h4>
+        <ul class="footer-links">
+          <li><span class="footer-bullet"></span> Зал 1 «Зеркальный» (до 20 чел.)</li>
+          <li><span class="footer-bullet"></span> Зал 2 «Loft Studio» (до 15 чел.)</li>
+          <li><span class="footer-bullet"></span> Зал 3 «Body & Mind» (до 12 чел.)</li>
+          <li><span class="footer-bullet"></span> Зал 4 «Choreo Pro» (до 25 чел.)</li>
+        </ul>
+      </div>
+
+      <!-- Колонка 4: Контакты -->
+      <div class="footer-col">
+        <h4 class="footer-title">Контакты и регламент</h4>
+        <address class="footer-contacts">
+          <p><strong>Адрес:</strong> г. Москва, ул. Танцевальная, д. 10</p>
+          <p><strong>Телефон:</strong> <a href="tel:+79000000000">+7 (900) 000-00-00</a></p>
+          <p><strong>Email:</strong> <a href="mailto:info@1million-dance.ru">info@1million-dance.ru</a></p>
+          <p><strong>Часы работы:</strong> ежедневно с 09:00 до 22:00</p>
+        </address>
+      </div>
+    </div>
+
+    <!-- Копирайт -->
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <p class="copyright">© 2026 Танцевальная студия 1MILLION. Проектирование и разработка веб-интерфейса.</p>
+        <p class="footer-reglament">Регламент студии: отмена занятия без списания доступна не позднее чем за 2 часа до старта.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="{% static 'js/main.js' %}"></script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>
