@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Запись на {{ slot.style.name }} | Студия танцев X{% endblock %}
+
+{% block content %}
+<section class="booking-page-section" aria-labelledby="booking-heading">
+  <div class="container container-narrow">
+
+    <nav class="booking-breadcrumb" aria-label="Навигация">
+      <a href="{% url 'schedule' %}" class="back-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Назад к расписанию
+      </a>
+    </nav>
+
+    <header class="booking-header text-center">
+      <h1 id="booking-heading" class="page-title">ЗАПИСЬ НА ЗАНЯТИЕ</h1>
+      <p class="page-subtitle">Подтвердите бронирование места в зале и способ списания занятия.</p>
+    </header>
+
+    {% if booking_success %}
+    
+    <article class="booking-feedback-card booking-success-card" aria-live="polite">
+      <div class="feedback-icon-box success-icon" aria-hidden="true">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+      </div>
+      <h2 class="feedback-title">ВЫ УСПЕШНО ЗАПИСАНЫ!</h2>
+      <p class="feedback-text">
+        Место на занятии <strong>{{ slot.style.name|upper }}</strong> забронировано за вами.
+      </p>
+      
+      <div class="booking-summary-pill">
+        <span>{{ slot.date|date:"d E Y" }}</span> • 
+        <span>{{ slot.start_time|time:"H:i" }} — {{ slot.end_time|time:"H:i" }}</span> • 
+        <span>{{ slot.hall.name }}</span>
+      </div>
+
+      <p class="feedback-subtext">
+        Напоминаем: бесплатная отмена записи доступна в Личном кабинете не позднее чем за 2 часа до старта.
+      </p>
+
+      <div class="feedback-actions">
+        <a href="{% url 'profile' %}" class="btn btn-primary btn-md">Перейти в личный кабинет</a>
+        <a href="{% url 'schedule' %}" class="btn btn-secondary btn-md">Вернуться к расписанию</a>
+      </div>
+    </article>
+
+    {% else %}
+
+    <article class="booking-card-main">
+      
+      {% if error_message %}
+      <div class="alert alert-error" role="alert">
+        {{ error_message }}
+      </div>
+      {% endif %}
+
+      <div class="booking-slot-info">
+        <div class="slot-info-header">
+          <div>
+            <span class="slot-tag-label">ВЫБРАННЫЙ УРОК</span>
+            <h2 class="slot-chosen-title">{{ slot.style.name|upper }}</h2>
+          </div>
+          <span class="badge badge-difficulty badge-diff-{{ slot.style.difficulty_level }}">
+            {{ slot.style.get_difficulty_level_display|upper }}
+          </span>
+        </div>
+
+        <div class="slot-detail-grid">
+          <div class="detail-item">
+            <span class="detail-label">Дата и день</span>
+            <strong class="detail-val">{{ slot.date|date:"d E Y (l)" }}</strong>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Время тренировки</span>
+            <strong class="detail-val">{{ slot.start_time|time:"H:i" }} — {{ slot.end_time|time:"H:i" }}</strong>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Зал студии</span>
+            <strong class="detail-val">{{ slot.hall.name }} (до {{ slot.capacity_limit }} чел.)</strong>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Преподаватель</span>
+            <strong class="detail-val">
+              {% if slot.replacement_teacher %}{{ slot.replacement_teacher.user.get_full_name }} (замена){% else %}{{ slot.teacher.user.get_full_name }}{% endif %}
+            </strong>
+          </div>
+        </div>
+
+        <div class="slot-availability-banner">
+          {% if slot.free_spots > 0 %}
+            <span class="status-pill status-green">✓ Доступно {{ slot.free_spots }} из {{ slot.capacity_limit }} мест</span>
+          {% else %}
+            <span class="status-pill status-gray">⚠ Свободных мест нет (лист ожидания)</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <form method="POST" action="{% url 'booking' slot.id %}" class="booking-form">
+        {% csrf_token %}
+
+        <div class="form-section">
+          <h3 class="form-section-title">Данные ученика</h3>
+          <div class="student-profile-strip">
+            <div class="student-avatar-small">
+              <span>{{ student.first_name|first }}{{ student.last_name|first }}</span>
+            </div>
+            <div>
+              <strong class="student-name-text">{{ student.get_full_name|default:student.username }}</strong>
+              <span class="student-phone-text">{{ student.phone }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3 class="form-section-title">Способ посещения</h3>
+
+          <div class="payment-options-list">
+            {% if active_sub %}
+            <label class="payment-option-card active">
+              <input type="radio" name="payment_method" value="subscription" checked>
+              <div class="option-content">
+                <strong class="option-title">Списать с абонемента «{{ active_sub.tariff.name }}»</strong>
+                <span class="option-desc">
+                  Доступно занятий: <strong>{{ active_sub.remaining_classes }}</strong>. 
+                  После бронирования останется {{ active_sub.remaining_classes|add:"-1" }} ур.
+                </span>
+              </div>
+              <span class="option-badge">Рекомендуется</span>
+            </label>
+            {% else %}
+            <div class="sub-empty-alert">
+              <p>У вас нет активного абонемента с остатком занятий.</p>
+              <a href="{% url 'tariffs' %}" class="btn btn-secondary btn-sm" target="_blank">Купить абонемент со скидкой</a>
+            </div>
+            {% endif %}
+
+            <label class="payment-option-card {% if not active_sub %}active{% endif %}">
+              <input type="radio" name="payment_method" value="single" {% if not active_sub %}checked{% endif %}>
+              <div class="option-content">
+                <strong class="option-title">Оплата разового занятия у администратора</strong>
+                <span class="option-desc">Стоимость разового посещения 800 ₽. Оплата картой или наличными перед началом урока.</span>
+              </div>
+              <span class="option-price">800 ₽</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="cancel-policy-notice">
+          <div class="policy-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          </div>
+          <div>
+            <strong class="policy-headline">Правило отмены за 2 часа</strong>
+            <p class="policy-text">
+              Бесплатная отмена возможна не позднее чем за 2 часа до старта тренировки. При поздней отмене занятие списывается с вашего баланса.
+            </p>
+          </div>
+        </div>
+
+        <div class="booking-actions-row">
+          {% if slot.free_spots > 0 and not slot.is_canceled %}
+            <button type="submit" class="btn btn-primary btn-lg btn-confirm-booking">
+              Подтвердить запись
+            </button>
+          {% else %}
+            <button type="button" class="btn btn-secondary btn-lg btn-disabled" disabled>
+              Мест нет
+            </button>
+          {% endif %}
+          <a href="{% url 'schedule' %}" class="btn btn-secondary btn-lg">Отмена</a>
+        </div>
+      </form>
+
+    </article>
+    {% endif %}
+
+  </div>
+</section>
+{% endblock %}

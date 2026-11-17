@@ -8,9 +8,7 @@ from .models import (
     SubscriptionTariff, Booking, UserSubscription
 )
 
-
 def home_view(request):
-    """Главная страница студии X."""
     styles = DanceStyle.objects.filter(is_active=True).order_by('name')[:6]
     halls = Hall.objects.all().order_by('name')
     stats = {
@@ -26,14 +24,7 @@ def home_view(request):
     }
     return render(request, 'core/index.html', context)
 
-
 def schedule_view(request):
-    """
-    Интерактивное расписание занятий.
-    Поддерживает фильтрацию по дням недели, залам, стилям, уровням и преподавателям.
-    Пагинация строго по 20 записей.
-    """
-    # 7 дней недели для переключателя (17 - 23 ноября 2026)
     base_monday = date(2026, 11, 17)
     week_days = []
     ru_day_names = ['ПОНЕДЕЛЬНИК', 'ВТОРНИК', 'СРЕДА', 'ЧЕТВЕРГ', 'ПЯТНИЦА', 'СУББОТА', 'ВОСКРЕСЕНЬЕ']
@@ -49,7 +40,6 @@ def schedule_view(request):
             'short_name': ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'][i],
         })
 
-    # Базовый QuerySet
     queryset = ClassSchedule.objects.select_related(
         'style', 'hall', 'teacher__user', 'replacement_teacher__user'
     ).annotate(
@@ -59,7 +49,6 @@ def schedule_view(request):
         )
     ).order_by('date', 'start_time')
 
-    # Получение GET-фильтров
     selected_date = request.GET.get('date', '')
     selected_hall = request.GET.get('hall', '')
     selected_style = request.GET.get('style', '')
@@ -77,19 +66,15 @@ def schedule_view(request):
     if selected_teacher:
         queryset = queryset.filter(Q(teacher_id=selected_teacher) | Q(replacement_teacher_id=selected_teacher))
 
-    # Вычисление свободных мест для каждого слота
     slots = list(queryset)
     for slot in slots:
         slot.free_spots = max(0, slot.capacity_limit - slot.active_bookings_count)
-        # Вычисление длительности в минутах
         slot.duration_minutes = (slot.end_time.hour * 60 + slot.end_time.minute) - (slot.start_time.hour * 60 + slot.start_time.minute)
 
-    # Пагинация по 20 записей (требование ТЗ Занятия 8)
     paginator = Paginator(slots, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    # Справочники для селекторов
     halls = Hall.objects.all().order_by('name')
     styles = DanceStyle.objects.filter(is_active=True).order_by('name')
     teachers = Teacher.objects.filter(is_active=True).select_related('user').order_by('user__last_name')
@@ -111,18 +96,13 @@ def schedule_view(request):
     }
     return render(request, 'core/schedule.html', context)
 
-
 def tariffs_view(request):
-    """
-    Тарифная сетка абонементов по макету Тарифы.png.
-    """
     tariffs = list(SubscriptionTariff.objects.filter(is_active=True).order_by('price_rub'))
     for tariff in tariffs:
         if not tariff.is_unlimited and tariff.classes_count:
             tariff.per_lesson = int(tariff.price_rub / tariff.classes_count)
         else:
             tariff.per_lesson = None
-        # По макету Figma Тарифы.png хит продаж — абонемент на 8 занятий
         tariff.is_hit = (tariff.classes_count == 8)
 
     context = {
@@ -130,27 +110,44 @@ def tariffs_view(request):
     }
     return render(request, 'core/tariffs.html', context)
 
-
 def styles_view(request):
-    """Каталог танцевальных стилей (заготовка под Занятие 8 шаг 3)"""
-    return HttpResponse("Каталог стилей")
+    query = request.GET.get('q', '').strip()
+    difficulty = request.GET.get('difficulty', '')
 
+    styles_qs = DanceStyle.objects.filter(is_active=True).prefetch_related('teachers__user')
+
+    if query:
+        styles_qs = styles_qs.filter(
+            Q(name__icontains=query) |
+            Q(description__icontains=query) |
+            Q(teachers__user__first_name__icontains=query) |
+            Q(teachers__user__last_name__icontains=query)
+        ).distinct()
+
+    if difficulty:
+        styles_qs = styles_qs.filter(difficulty_level=difficulty)
+
+    styles = list(styles_qs.order_by('name'))
+
+    teachers = Teacher.objects.filter(is_active=True).select_related('user').prefetch_related('specialties').order_by('user__last_name')
+    difficulty_choices = DanceStyle.DIFFICULTY_CHOICES
+
+    context = {
+        'styles': styles,
+        'teachers': teachers,
+        'difficulty_choices': difficulty_choices,
+        'selected_difficulty': difficulty,
+        'query': query,
+    }
+    return render(request, 'core/styles.html', context)
 
 def profile_view(request):
-    """
-    Личный кабинет ученика по макету ЛичныйКабинет.png:
-    - Персональные данные и статус ученика
-    - Карточка активного абонемента с остатком и шкалой прогресса
-    - Таблица активных броней с проверкой правила отмены за 2 часа
-    - История посещенных занятий со статусами списания
-    """
     user_id = request.GET.get('user_id', 6)
     try:
         student = User.objects.get(id=user_id)
     except User.DoesNotExist:
         student = User.objects.filter(role='student').first()
 
-    # Активные абонементы
     active_subscriptions = student.subscriptions.filter(status='active').select_related('tariff').order_by('-start_date')
     current_sub = active_subscriptions.first()
 
@@ -161,7 +158,6 @@ def profile_view(request):
         current_sub.progress_pct = 100
         current_sub.used_classes = 0
 
-    # Бронирования: предстоящие и история
     all_bookings = student.bookings.select_related(
         'schedule__style', 'schedule__hall', 'schedule__teacher__user', 'subscription__tariff'
     ).order_by('schedule__date', 'schedule__start_time')
@@ -194,33 +190,23 @@ def profile_view(request):
     }
     return render(request, 'core/profile.html', context)
 
-
 def journal_view(request):
-    """
-    Электронный журнал преподавателя по макету ЖурналПреподавателя.png:
-    - Выбор слота расписания преподавателя
-    - Сводка заполняемости и посещаемости группы
-    - Список записанных студентов с переключателями статуса (Присутствовал / Пропуск)
-    """
     teacher_id = request.GET.get('teacher_id')
     if teacher_id:
         teacher = get_object_or_404(Teacher, id=teacher_id)
     else:
         teacher = Teacher.objects.filter(user__username='t_elena').first() or Teacher.objects.first()
 
-    # Все слоты преподавателя
     teacher_slots = ClassSchedule.objects.filter(
         Q(teacher=teacher) | Q(replacement_teacher=teacher)
     ).select_related('style', 'hall').order_by('-date', '-start_time')
 
-    # Выбранный слот
     slot_id = request.GET.get('slot_id')
     if slot_id:
         current_slot = get_object_or_404(ClassSchedule, id=slot_id)
     else:
         current_slot = teacher_slots.annotate(cnt=Count('bookings')).order_by('-cnt').first()
 
-    # Записи учеников на текущий слот
     bookings = []
     stats = {'total': 0, 'attended': 0, 'missed': 0, 'booked': 0, 'rate': 0}
     if current_slot:
@@ -247,7 +233,60 @@ def journal_view(request):
     }
     return render(request, 'core/journal.html', context)
 
-
 def booking_view(request, schedule_id):
-    """Форма онлайн-бронирования (заготовка под Занятие 8 шаг 3)"""
-    return HttpResponse(f"Бронирование слота #{schedule_id}")
+    slot = get_object_or_404(
+        ClassSchedule.objects.select_related('style', 'hall', 'teacher__user', 'replacement_teacher__user'),
+        id=schedule_id
+    )
+
+    active_bookings_count = slot.bookings.filter(status__in=['booked', 'attended']).count()
+    free_spots = max(0, slot.capacity_limit - active_bookings_count)
+    slot.free_spots = free_spots
+
+    user_id = request.GET.get('user_id', 6)
+    student = User.objects.filter(id=user_id, role='student').first() or User.objects.filter(role='student').first()
+
+    existing_booking = Booking.objects.filter(schedule=slot, user=student).first() if student else None
+
+    user_subs = student.subscriptions.filter(status='active', remaining_classes__gt=0).select_related('tariff') if student else []
+    active_sub = user_subs.first() if user_subs else None
+
+    booking_success = False
+    error_message = None
+
+    if request.method == 'POST':
+        if slot.is_canceled:
+            error_message = 'Занятие отменено студией. Запись невозможна.'
+        elif free_spots <= 0:
+            error_message = 'К сожалению, все места на этот урок уже забронированы.'
+        elif existing_booking and existing_booking.status == 'booked':
+            error_message = 'Вы уже записаны на это занятие!'
+        else:
+            used_sub = active_sub
+            if used_sub:
+                used_sub.remaining_classes = max(0, used_sub.remaining_classes - 1)
+                if used_sub.remaining_classes == 0 and not used_sub.tariff.is_unlimited:
+                    used_sub.status = 'exhausted'
+                used_sub.save()
+
+            booking, _ = Booking.objects.update_or_create(
+                schedule=slot,
+                user=student,
+                defaults={
+                    'subscription': used_sub,
+                    'status': 'booked',
+                    'is_deducted': True if used_sub else False
+                }
+            )
+            booking_success = True
+
+    context = {
+        'slot': slot,
+        'student': student,
+        'active_sub': active_sub,
+        'existing_booking': existing_booking,
+        'free_spots': free_spots,
+        'booking_success': booking_success,
+        'error_message': error_message,
+    }
+    return render(request, 'core/booking_detail.html', context)

@@ -1,7 +1,3 @@
-/**
- * 1MILLION DANCE STUDIO — ОСНОВНАЯ КЛИЕНТСКАЯ ЛОГИКА
- */
-
 document.addEventListener('DOMContentLoaded', () => {
   const burgerBtn = document.getElementById('burgerBtn');
   const siteNav = document.getElementById('siteNav');
@@ -13,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
       burgerBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
     });
 
-    // Закрытие меню при клике вне его области
     document.addEventListener('click', (e) => {
       if (!siteNav.contains(e.target) && !burgerBtn.contains(e.target) && siteNav.classList.contains('open')) {
         siteNav.classList.remove('open');
@@ -22,7 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Закрытие при нажатии Esc
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && siteNav.classList.contains('open')) {
         siteNav.classList.remove('open');

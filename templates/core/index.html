@@ -4,7 +4,7 @@
 {% block title %}Студия X — Твой ритм, твоя свобода | Главная{% endblock %}
 
 {% block content %}
-<!-- Секция 1: Главный Hero-блок в виде темной закругленной карточки по макету Figma -->
+
 <section class="hero-block-section" aria-labelledby="hero-title">
   <div class="container">
     <div class="hero-card">
@@ -19,7 +19,6 @@
         </div>
       </div>
 
-      <!-- Разделитель и строка ключевых показателей внутри карточки -->
       <div class="hero-stats-row">
         <div class="hero-stat-item">
           <strong class="hero-stat-number stat-orange">4 ЗАЛА</strong>
@@ -42,7 +41,6 @@
   </div>
 </section>
 
-<!-- Секция 2: Популярные направления с двухцветными карточками (Figma) -->
 <section class="styles-preview-section" aria-labelledby="styles-section-title">
   <div class="container">
     <header class="section-title-wrap">
@@ -53,7 +51,7 @@
     <div class="two-tone-styles-grid">
       {% for style in styles %}
       <article class="two-tone-card">
-        <!-- Верхняя темная половина карточки -->
+        
         <div class="card-top-dark">
           {% if forloop.first %}
             <span class="pill-badge pill-orange">ХИТ СЕЗОНА</span>
@@ -67,7 +65,6 @@
           <h3 class="card-style-title">{{ style.name }}</h3>
         </div>
 
-        <!-- Нижняя светлая половина карточки -->
         <div class="card-bottom-light">
           <div class="card-badge-line">
             {% if forloop.first %}
@@ -104,7 +101,6 @@
   </div>
 </section>
 
-<!-- Секция 3: Залы студии X -->
 <section class="halls-section" id="halls" aria-labelledby="halls-section-title">
   <div class="container">
     <header class="section-title-wrap">
@@ -146,7 +142,6 @@
   </div>
 </section>
 
-<!-- Секция 4: Блок правил использования абонементов студии X -->
 <section class="studio-rules-section" aria-labelledby="rules-title">
   <div class="container">
     <div class="studio-rules-card">

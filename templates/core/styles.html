@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Направления танцев | Студия танцев X{% endblock %}
+
+{% block content %}
+<section class="styles-page-section" aria-labelledby="styles-heading">
+  <div class="container">
+
+    <header class="styles-header text-center">
+      <h1 id="styles-heading" class="page-title">ТАНЦЕВАЛЬНЫЕ НАПРАВЛЕНИЯ</h1>
+      <p class="page-subtitle">
+        Авторские программы обучения от ведущих хореографов. От базовых шагов для начинающих до профессиональных постановок и съемок.
+      </p>
+    </header>
+
+    <div class="styles-filter-panel">
+      <form method="GET" action="{% url 'styles' %}" class="styles-search-form">
+        <div class="search-input-wrap">
+          <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="search" name="q" value="{{ query }}" class="form-input search-input" placeholder="Поиск направления или преподавателя..." aria-label="Поиск по направлениям">
+          {% if query %}
+            <a href="{% url 'styles' %}" class="search-clear-btn" aria-label="Сбросить поиск">✕</a>
+          {% endif %}
+        </div>
+
+        <div class="diff-tabs-group" role="group" aria-label="Фильтр по уровню">
+          <a href="{% url 'styles' %}{% if query %}?q={{ query }}{% endif %}" class="diff-tab {% if not selected_difficulty %}active{% endif %}">
+            Все уровни
+          </a>
+          {% for code, label in difficulty_choices %}
+            <a href="?difficulty={{ code }}{% if query %}&q={{ query }}{% endif %}" class="diff-tab {% if selected_difficulty == code %}active{% endif %}">
+              {{ label }}
+            </a>
+          {% endfor %}
+        </div>
+      </form>
+    </div>
+
+    <div class="two-tone-styles-grid">
+      {% for style in styles %}
+      <article class="two-tone-card">
+        
+        <div class="card-dark-half">
+          <div class="card-badges-row">
+            <span class="badge badge-difficulty badge-diff-{{ style.difficulty_level }}">
+              {{ style.get_difficulty_level_display|upper }}
+            </span>
+          </div>
+          <h2 class="card-title-white">{{ style.name|upper }}</h2>
+        </div>
+
+        <div class="card-light-half">
+          <p class="card-desc-text">
+            {{ style.description|default:"Освоение базы, развитие пластики, работа над подачей и изучение сценической хореографии." }}
+          </p>
+
+          <div class="card-instructors-box">
+            <span class="instructors-label">Преподаватели:</span>
+            <div class="instructors-tags">
+              {% for teacher in style.teachers.all %}
+                <span class="instructor-tag">{{ teacher.user.get_full_name }}</span>
+              {% empty %}
+                <span class="instructor-tag">Елена Соколова</span>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="card-price-flex">
+            <div>
+              <span class="price-val">от 800 ₽</span>
+              <span class="price-sub">/ занятие</span>
+            </div>
+            <a href="{% url 'schedule' %}?style={{ style.id }}" class="btn btn-primary btn-sm">
+              Расписание
+            </a>
+          </div>
+        </div>
+      </article>
+      {% empty %}
+      <div class="empty-state">
+        <p>По запросу «{{ query }}» ничего не найдено.</p>
+        <a href="{% url 'styles' %}" class="btn btn-secondary btn-sm" style="margin-top: 12px;">Сбросить фильтры</a>
+      </div>
+      {% endfor %}
+    </div>
+
+    <section class="teachers-section" id="teachers" aria-labelledby="teachers-heading">
+      <header class="section-title-wrap text-center">
+        <h2 id="teachers-heading" class="section-title">ХОРЕОГРАФЫ СТУДИИ X</h2>
+        <p class="section-subtitle">
+          Победители всероссийских и мировых чемпионатов с подтвержденным педагогическим стажем.
+        </p>
+      </header>
+
+      <div class="teachers-grid">
+        {% for t in teachers %}
+        <article class="teacher-card">
+          <div class="teacher-avatar-frame">
+            <div class="teacher-avatar-placeholder">
+              <span>{{ t.user.first_name|first }}{{ t.user.last_name|first }}</span>
+            </div>
+          </div>
+          <div class="teacher-info">
+            <h3 class="teacher-name">{{ t.user.get_full_name }}</h3>
+            <span class="teacher-exp">Стаж преподавания: {{ t.experience_years }} {{ t.experience_years|pluralize:"год,года,лет" }}</span>
+            <p class="teacher-bio">{{ t.bio|default:"Профессиональный хореограф-постановщик, участник танцевальных контестов."|truncatewords:20 }}</p>
+            <div class="teacher-styles-list">
+              {% for s in t.specialties.all %}
+                <span class="badge badge-subtle">{{ s.name }}</span>
+              {% endfor %}
+            </div>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+
+  </div>
+</section>
+{% endblock %}

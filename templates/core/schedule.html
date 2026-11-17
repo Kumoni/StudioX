@@ -6,14 +6,12 @@
 {% block content %}
 <section class="schedule-page-section" aria-labelledby="schedule-heading">
   <div class="container">
-    
-    <!-- Заголовок страницы по макету Figma -->
+
     <header class="schedule-header">
       <h1 id="schedule-heading" class="page-title">РАСПИСАНИЕ ЗАНЯТИЙ</h1>
       <p class="page-subtitle">Выберите удобное время и запишитесь онлайн. Доступна отмена за 2 часа до старта.</p>
     </header>
 
-    <!-- Карусель / переключатель дней недели (ПН 17 НОЯБРЯ — ВС 23 НОЯБРЯ) -->
     <nav class="day-switcher-carousel" aria-label="Выбор дня недели">
       <ul class="day-tabs-list">
         {% for day in week_days %}
@@ -28,7 +26,6 @@
       </ul>
     </nav>
 
-    <!-- Панель фильтров: залы, стили, уровень, преподаватель, сброс -->
     <section class="filter-bar-card" aria-label="Фильтры расписания">
       <form method="GET" action="{% url 'schedule' %}" class="filter-form">
         {% if selected_date %}
@@ -89,19 +86,16 @@
       </form>
     </section>
 
-    <!-- Список занятий (слоты сетки) -->
     <div class="schedule-slots-container">
       {% for slot in page_obj %}
       <article class="slot-row-card {% if slot.free_spots == 0 or slot.is_canceled %}slot-full{% endif %} stripe-{% cycle 'orange' 'blue' 'gray' 'teal' %}">
-        
-        <!-- Время и длительность -->
+
         <div class="slot-time-block">
           <time class="slot-time">{{ slot.start_time|time:"H:i" }} — {{ slot.end_time|time:"H:i" }}</time>
           <span class="slot-duration">Длительность: {{ slot.duration_minutes }} мин</span>
           <span class="slot-date-badge">{{ slot.date|date:"d E" }}</span>
         </div>
 
-        <!-- Направление и хореограф -->
         <div class="slot-info-block">
           <div class="slot-title-line">
             <h2 class="slot-style-title">{{ slot.style.name|upper }}</h2>
@@ -121,13 +115,11 @@
           </p>
         </div>
 
-        <!-- Зал -->
         <div class="slot-hall-block">
           <strong class="slot-hall-name">{{ slot.hall.name }}</strong>
           <span class="slot-hall-cap">Вместимость: {{ slot.capacity_limit }} чел</span>
         </div>
 
-        <!-- Статус наличия мест -->
         <div class="slot-availability-block">
           {% if slot.is_canceled %}
             <span class="status-pill status-gray">Отменено</span>
@@ -140,7 +132,6 @@
           {% endif %}
         </div>
 
-        <!-- Кнопка бронирования -->
         <div class="slot-action-block">
           {% if slot.is_canceled or slot.free_spots == 0 %}
             <button type="button" class="btn btn-secondary btn-sm btn-disabled" disabled>Лист ожидания</button>
@@ -158,7 +149,6 @@
       {% endfor %}
     </div>
 
-    <!-- Блок пагинации (по 20 записей согласно ТЗ) -->
     {% if page_obj.has_other_pages %}
     <nav class="pagination-nav" aria-label="Постраничная навигация">
       <ul class="pagination-list">

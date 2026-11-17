@@ -1,9 +1,5 @@
-/* ==============================================================================
-   СТУДИЯ ТАНЦЕВ X — ДИЗАЙН-СИСТЕМА И ИНТЕРФЕЙС (FIGMA X)
-   ============================================================================== */
-
 :root {
-  /* Палитра UI-kit */
+  
   --color-primary: #FF4D00;
   --color-primary-hover: #E04400;
   --color-primary-active: #C73B00;
@@ -27,24 +23,20 @@
   --color-info: #3B82F6;
   --color-info-bg: #EFF6FF;
 
-  /* Шрифты */
   --font-heading: 'Montserrat', sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
-  /* Размеры */
   --container-max: 1200px;
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
   --radius-full: 9999px;
 
-  /* Тени */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.07);
   --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.1);
 }
 
-/* --- Сброс стилей --- */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -88,7 +80,6 @@ button, input, select, textarea {
   font: inherit;
 }
 
-/* --- Контейнер --- */
 .container {
   width: 100%;
   max-width: var(--container-max);
@@ -98,7 +89,6 @@ button, input, select, textarea {
   padding-right: 20px;
 }
 
-/* --- Белая контрастная шапка (Figma) --- */
 .site-header {
   background-color: var(--color-surface);
   color: var(--color-text);
@@ -116,7 +106,6 @@ button, input, select, textarea {
   height: 72px;
 }
 
-/* Логотип: точка + X */
 .logo {
   display: inline-flex;
   align-items: center;
@@ -140,7 +129,6 @@ button, input, select, textarea {
   color: var(--color-text);
 }
 
-/* Навигация десктоп */
 .site-nav {
   display: flex;
   align-items: center;
@@ -173,7 +161,6 @@ button, input, select, textarea {
   display: none;
 }
 
-/* Кнопки шапки */
 .header-actions {
   display: flex;
   align-items: center;
@@ -207,7 +194,6 @@ button, input, select, textarea {
   background-color: var(--color-primary-hover);
 }
 
-/* Кнопка бургера (мобильная) */
 .burger-btn {
   display: none;
   flex-direction: column;
@@ -242,7 +228,6 @@ button, input, select, textarea {
   transform: translateY(-7px) rotate(-45deg);
 }
 
-/* --- Кнопки UI-kit --- */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -310,7 +295,6 @@ button, input, select, textarea {
   font-size: 16px;
 }
 
-/* --- Бейджи --- */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -339,7 +323,6 @@ button, input, select, textarea {
   font-size: 12px;
 }
 
-/* --- Системные уведомления --- */
 .messages-container {
   margin-top: 16px;
 }
@@ -376,16 +359,10 @@ button, input, select, textarea {
   opacity: 0.7;
 }
 
-/* --- Основной контент --- */
 .site-main {
   flex: 1;
 }
 
-/* ==============================================================================
-   СЕКЦИИ ГЛАВНОЙ СТРАНИЦЫ (FIGMA ГЛАВНАЯ.PNG)
-   ============================================================================== */
-
-/* 1. Темный Hero-блок */
 .hero-block-section {
   padding: 32px 0 24px 0;
 }
@@ -422,7 +399,6 @@ button, input, select, textarea {
   flex-wrap: wrap;
 }
 
-/* Строка показателей внутри Hero-карточки */
 .hero-stats-row {
   border-top: 1px solid #27272A;
   margin-top: 40px;
@@ -458,7 +434,6 @@ button, input, select, textarea {
   margin-top: 4px;
 }
 
-/* 2. Заголовки секций */
 .section-title-wrap {
   margin: 50px 0 28px 0;
 }
@@ -477,7 +452,6 @@ button, input, select, textarea {
   margin-top: 4px;
 }
 
-/* 3. Двухцветные карточки стилей (Figma) */
 .two-tone-styles-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -606,7 +580,6 @@ button, input, select, textarea {
   margin-bottom: 60px;
 }
 
-/* 4. Залы студии */
 .halls-section {
   padding-bottom: 60px;
 }
@@ -665,7 +638,6 @@ button, input, select, textarea {
   margin-top: 12px;
 }
 
-/* 5. Карточка правил студии X */
 .studio-rules-section {
   padding-bottom: 70px;
 }
@@ -700,7 +672,6 @@ button, input, select, textarea {
   flex-wrap: wrap;
 }
 
-/* --- Подвал сайта (Footer) --- */
 .site-footer {
   background-color: var(--color-obsidian);
   color: #9CA3AF;
@@ -810,7 +781,6 @@ button, input, select, textarea {
   color: #6B7280;
 }
 
-/* Мобильная нижняя панель (Bottom Bar) */
 .mobile-bottom-bar {
   display: none;
   position: fixed;
@@ -848,7 +818,6 @@ button, input, select, textarea {
   font-weight: 700;
 }
 
-/* Пустое состояние */
 .empty-state {
   text-align: center;
   padding: 40px;
@@ -856,11 +825,6 @@ button, input, select, textarea {
   grid-column: 1 / -1;
 }
 
-/* ==============================================================================
-   СТРАНИЦЫ: РАСПИСАНИЕ И ТАРИФЫ (ДЕНЬ 2 / ЗАНЯТИЕ 8)
-   ============================================================================== */
-
-/* Общие заголовки страниц */
 .schedule-page-section,
 .tariffs-page-section {
   padding: 40px 0 60px;
@@ -897,7 +861,6 @@ button, input, select, textarea {
   text-align: center;
 }
 
-/* --- Переключатель дней недели (Карусель) --- */
 .day-switcher-carousel {
   margin-bottom: 24px;
   overflow-x: auto;
@@ -956,7 +919,6 @@ button, input, select, textarea {
   font-weight: 500;
 }
 
-/* --- Панель фильтров --- */
 .filter-bar-card {
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -1006,7 +968,6 @@ button, input, select, textarea {
   padding: 0 16px;
 }
 
-/* --- Список слотов расписания --- */
 .schedule-slots-container {
   display: flex;
   flex-direction: column;
@@ -1054,7 +1015,6 @@ button, input, select, textarea {
   opacity: 0.85;
 }
 
-/* Блоки внутри слота */
 .slot-time-block {
   display: flex;
   flex-direction: column;
@@ -1190,7 +1150,6 @@ button, input, select, textarea {
   margin-bottom: 16px;
 }
 
-/* --- Пагинация (требование ТЗ) --- */
 .pagination-nav {
   display: flex;
   flex-direction: column;
@@ -1241,9 +1200,6 @@ button, input, select, textarea {
   color: var(--color-muted);
 }
 
-/* ==============================================================================
-   ТАРИФЫ (Figma Тарифы.png)
-   ============================================================================== */
 .tariffs-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -1268,7 +1224,6 @@ button, input, select, textarea {
   box-shadow: var(--shadow-lg);
 }
 
-/* ХИТ ПРОДАЖ — Темная карточка по макету Figma */
 .tariff-card.tariff-hit {
   background-color: var(--color-obsidian);
   border-color: var(--color-obsidian);
@@ -1408,7 +1363,6 @@ button, input, select, textarea {
   min-height: 44px;
 }
 
-/* Блок правил тарифов */
 .tariffs-rules-card {
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -1469,15 +1423,11 @@ button, input, select, textarea {
   line-height: 1.5;
 }
 
-/* ==============================================================================
-   ЛИЧНЫЙ КАБИНЕТ УЧЕНИКА (Figma ЛичныйКабинет.png)
-   ============================================================================== */
 .profile-page-section,
 .journal-page-section {
   padding: 40px 0 60px;
 }
 
-/* Шапка профиля пользователя */
 .profile-user-header {
   display: flex;
   align-items: center;
@@ -1549,7 +1499,6 @@ button, input, select, textarea {
   flex-shrink: 0;
 }
 
-/* Сетка карточек профиля */
 .profile-cards-grid {
   display: grid;
   grid-template-columns: 1.4fr 1fr;
@@ -1625,7 +1574,6 @@ button, input, select, textarea {
   text-align: right;
 }
 
-/* Прогресс-бар абонемента */
 .sub-progress-wrap {
   margin-bottom: 24px;
 }
@@ -1689,7 +1637,6 @@ button, input, select, textarea {
   text-decoration: underline;
 }
 
-/* Карточка правил 2 часов */
 .sub-card-info {
   background-color: #FAFAFA;
 }
@@ -1728,7 +1675,6 @@ button, input, select, textarea {
   margin-top: auto;
 }
 
-/* Секции списков личного кабинета */
 .profile-section {
   margin-bottom: 40px;
 }
@@ -1756,7 +1702,6 @@ button, input, select, textarea {
   border-radius: var(--radius-full);
 }
 
-/* Таблицы данных (Data Table) */
 .table-responsive-card {
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -1852,9 +1797,6 @@ button, input, select, textarea {
   gap: 12px;
 }
 
-/* ==============================================================================
-   ЭЛЕКТРОННЫЙ ЖУРНАЛ ПРЕПОДАВАТЕЛЯ (Figma ЖурналПреподавателя.png)
-   ============================================================================== */
 .journal-header {
   display: flex;
   justify-content: space-between;
@@ -1873,7 +1815,6 @@ button, input, select, textarea {
   padding: 8px 16px;
 }
 
-/* Карточка выбранного слота */
 .slot-selector-card {
   background-color: var(--color-obsidian);
   color: #FFFFFF;
@@ -1937,7 +1878,6 @@ button, input, select, textarea {
   height: 40px;
 }
 
-/* Виджеты статистики журнала */
 .journal-stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -1993,7 +1933,6 @@ button, input, select, textarea {
   color: var(--color-muted);
 }
 
-/* Ведомость посещаемости */
 .journal-sheet-section {
   margin-bottom: 40px;
 }
@@ -2061,7 +2000,6 @@ button, input, select, textarea {
   color: var(--color-text);
 }
 
-/* Переключатели посещаемости */
 .attendance-btn-group {
   display: inline-flex;
   border: 1px solid var(--color-border);
@@ -2132,6 +2070,569 @@ button, input, select, textarea {
   color: var(--color-muted);
 }
 
+.styles-page-section {
+  padding: 40px 0 60px;
+}
+
+.styles-header {
+  margin-bottom: 32px;
+}
+
+.styles-filter-panel {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  margin-bottom: 32px;
+  box-shadow: var(--shadow-sm);
+}
+
+.styles-search-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.search-input-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-muted);
+}
+
+.search-input {
+  width: 100%;
+  height: 46px;
+  padding: 8px 40px 8px 44px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  color: var(--color-text);
+  background-color: #FFFFFF;
+  transition: border-color 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.search-clear-btn {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: var(--color-muted);
+  cursor: pointer;
+}
+
+.diff-tabs-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.diff-tab {
+  padding: 8px 16px;
+  background-color: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+  transition: all 0.2s ease;
+}
+
+.diff-tab:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.diff-tab.active {
+  background-color: var(--color-obsidian);
+  border-color: var(--color-obsidian);
+  color: #FFFFFF;
+}
+
+.card-instructors-box {
+  margin: 14px 0;
+}
+
+.instructors-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  letter-spacing: 0.05em;
+}
+
+.instructors-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.instructor-tag {
+  background-color: #F3F4F6;
+  color: var(--color-text);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.teachers-section {
+  margin-top: 60px;
+  padding-top: 40px;
+  border-top: 1px solid var(--color-border);
+}
+
+.section-title-wrap {
+  margin-bottom: 32px;
+}
+
+.section-subtitle {
+  font-size: 14px;
+  color: var(--color-muted);
+  max-width: 600px;
+  margin: 6px auto 0;
+}
+
+.teachers-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.teacher-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 24px 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.teacher-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.teacher-avatar-frame {
+  margin-bottom: 16px;
+}
+
+.teacher-avatar-placeholder {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-obsidian);
+  color: var(--color-primary);
+  font-family: var(--font-heading);
+  font-size: 26px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--color-primary-light);
+}
+
+.teacher-name {
+  font-family: var(--font-heading);
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--color-obsidian);
+  margin-bottom: 4px;
+}
+
+.teacher-exp {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: 10px;
+}
+
+.teacher-bio {
+  font-size: 13px;
+  color: var(--color-muted);
+  line-height: 1.4;
+  margin-bottom: 14px;
+  flex-grow: 1;
+}
+
+.teacher-styles-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.badge-subtle {
+  background-color: #F3F4F6;
+  color: var(--color-text);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.booking-page-section {
+  padding: 30px 0 60px;
+}
+
+.container-narrow {
+  max-width: 680px;
+}
+
+.booking-breadcrumb {
+  margin-bottom: 20px;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-muted);
+}
+
+.back-link:hover {
+  color: var(--color-primary);
+}
+
+.booking-header {
+  margin-bottom: 24px;
+}
+
+.booking-card-main {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  box-shadow: var(--shadow-sm);
+}
+
+.booking-slot-info {
+  background-color: #FAFAFA;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.slot-info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.slot-tag-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: 0.08em;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.slot-chosen-title {
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--color-obsidian);
+}
+
+.slot-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px 18px;
+  margin-bottom: 16px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.detail-label {
+  font-size: 11px;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.detail-val {
+  font-size: 14px;
+  color: var(--color-obsidian);
+}
+
+.slot-availability-banner {
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
+}
+
+.booking-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-section-title {
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-obsidian);
+}
+
+.student-profile-strip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background-color: #F9FAFB;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.student-avatar-small {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-obsidian);
+  color: var(--color-primary);
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.student-name-text {
+  display: block;
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.student-phone-text {
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+.payment-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.payment-option-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: #FFFFFF;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.payment-option-card:hover {
+  border-color: var(--color-primary-light);
+}
+
+.payment-option-card.active,
+.payment-option-card:has(input:checked) {
+  border-color: var(--color-primary);
+  background-color: #FFFDFB;
+}
+
+.payment-option-card input[type="radio"] {
+  accent-color: var(--color-primary);
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.option-content {
+  flex-grow: 1;
+}
+
+.option-title {
+  display: block;
+  font-size: 14px;
+  color: var(--color-text);
+  margin-bottom: 2px;
+}
+
+.option-desc {
+  font-size: 12px;
+  color: var(--color-muted);
+  line-height: 1.4;
+}
+
+.option-badge {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.option-price {
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--color-obsidian);
+  flex-shrink: 0;
+}
+
+.sub-empty-alert {
+  padding: 14px;
+  background-color: #FEF2F2;
+  border: 1px solid #FCA5A5;
+  border-radius: var(--radius-md);
+  color: #991B1B;
+  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cancel-policy-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  background-color: var(--color-warning-bg);
+  border: 1px solid #FDE68A;
+  border-radius: var(--radius-md);
+}
+
+.policy-icon {
+  color: var(--color-warning);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.policy-headline {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #92400E;
+  margin-bottom: 2px;
+}
+
+.policy-text {
+  font-size: 12px;
+  color: #78350F;
+  line-height: 1.4;
+}
+
+.booking-actions-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.btn-confirm-booking {
+  flex: 1;
+}
+
+.booking-feedback-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 40px 32px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.feedback-icon-box {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.feedback-icon-box.success-icon {
+  background-color: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.feedback-title {
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--color-obsidian);
+  margin-bottom: 8px;
+}
+
+.feedback-text {
+  font-size: 15px;
+  color: var(--color-text);
+  margin-bottom: 16px;
+}
+
+.booking-summary-pill {
+  display: inline-flex;
+  gap: 8px;
+  background-color: #F3F4F6;
+  padding: 8px 18px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-obsidian);
+  margin-bottom: 16px;
+}
+
+.feedback-subtext {
+  font-size: 13px;
+  color: var(--color-muted);
+  max-width: 480px;
+  margin-bottom: 28px;
+  line-height: 1.4;
+}
+
+.feedback-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
 @media (max-width: 1024px) {
   .hero-heading {
     font-size: 36px;
@@ -2143,6 +2644,24 @@ button, input, select, textarea {
   .two-tone-styles-grid, .halls-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+  .tariffs-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .journal-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .profile-cards-grid {
+    grid-template-columns: 1fr;
+  }
+  .teachers-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .slot-row-card {
+    grid-template-columns: 150px 1fr 120px 140px;
+  }
+  .slot-availability-block {
+    grid-column: span 1;
+  }
   .footer-grid {
     grid-template-columns: 1fr 1fr;
     gap: 24px;
@@ -2151,7 +2670,7 @@ button, input, select, textarea {
 
 @media (max-width: 768px) {
   body {
-    padding-bottom: 64px; /* Отступ под bottom bar */
+    padding-bottom: 64px; 
   }
 
   .header-inner {
@@ -2230,6 +2749,122 @@ button, input, select, textarea {
     gap: 16px;
   }
 
+  .tariffs-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .rules-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .teachers-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .slot-row-card {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .slot-time-block {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .slot-action-block {
+    width: 100%;
+  }
+
+  .slot-action-block .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .filter-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-col, .filter-col-reset {
+    width: 100%;
+    flex: 1 1 100%;
+  }
+
+  .filter-col-reset .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .profile-user-header {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+    gap: 16px;
+  }
+
+  .profile-name-row {
+    justify-content: center;
+  }
+
+  .profile-quick-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .profile-quick-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .journal-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .teacher-select-wrap {
+    width: 100%;
+  }
+
+  .teacher-picker-select {
+    width: 100%;
+  }
+
+  .slot-selector-inner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .slot-dropdown-col {
+    width: 100%;
+  }
+
+  .sheet-header-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .sheet-quick-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .sheet-quick-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .slot-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
   .footer-grid {
     grid-template-columns: 1fr;
     gap: 28px;
@@ -2256,5 +2891,17 @@ button, input, select, textarea {
 
   .btn-lg {
     width: 100%;
+  }
+
+  .booking-card-main {
+    padding: 20px 14px;
+  }
+
+  .booking-actions-row {
+    flex-direction: column;
+  }
+
+  .j-stat-card {
+    padding: 14px;
   }
 }

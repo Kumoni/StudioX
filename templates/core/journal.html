@@ -7,7 +7,6 @@
 <section class="journal-page-section" aria-labelledby="journal-heading">
   <div class="container">
 
-    <!-- Заголовок страницы журнала -->
     <header class="journal-header">
       <div class="journal-title-box">
         <h1 id="journal-heading" class="page-title">ЖУРНАЛ ПРЕПОДАВАТЕЛЯ</h1>
@@ -16,7 +15,6 @@
         </p>
       </div>
 
-      <!-- Переключатель преподавателя -->
       <div class="teacher-select-wrap">
         <label for="teacher-picker" class="sr-only">Выбор преподавателя</label>
         <form method="GET" action="{% url 'journal' %}" class="teacher-form">
@@ -31,7 +29,6 @@
       </div>
     </header>
 
-    <!-- Выбор занятия / слота расписания -->
     <section class="slot-selector-card" aria-label="Выбор урока в расписании">
       <div class="slot-selector-inner">
         <div class="slot-info-summary">
@@ -63,7 +60,6 @@
       </div>
     </section>
 
-    <!-- Карточки статистики посещаемости группы -->
     <div class="journal-stats-grid">
       <article class="j-stat-card">
         <span class="j-stat-label">Вместимость зала</span>
@@ -93,7 +89,6 @@
       </article>
     </div>
 
-    <!-- Таблица учеников группы (электронная ведомость) -->
     <section class="journal-sheet-section" aria-labelledby="sheet-heading">
       <div class="sheet-header-bar">
         <h2 id="sheet-heading" class="sheet-title">СПИСОК УЧЕНИКОВ ГРУППЫ</h2>

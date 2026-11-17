@@ -6,8 +6,7 @@
 {% block content %}
 <section class="tariffs-page-section" aria-labelledby="tariffs-heading">
   <div class="container">
-    
-    <!-- Заголовок страницы -->
+
     <header class="tariffs-header text-center">
       <h1 id="tariffs-heading" class="page-title">ТАРИФЫ И АБОНЕМЕНТЫ</h1>
       <p class="page-subtitle">
@@ -15,7 +14,6 @@
       </p>
     </header>
 
-    <!-- Сетка тарифных планов по макету Figma -->
     <div class="tariffs-grid">
       {% for tariff in tariffs %}
       <article class="tariff-card {% if tariff.is_hit %}tariff-hit{% endif %}">
@@ -86,7 +84,6 @@
       {% endfor %}
     </div>
 
-    <!-- Блок правил действия абонементов -->
     <section class="tariffs-rules-card" aria-labelledby="rules-heading">
       <div class="rules-header-flex">
         <div class="rules-icon-box" aria-hidden="true">
