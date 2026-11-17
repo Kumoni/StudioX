@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Расписание занятий | Студия танцев X{% endblock %}
+
+{% block content %}
+<section class="schedule-page-section" aria-labelledby="schedule-heading">
+  <div class="container">
+    
+    <!-- Заголовок страницы по макету Figma -->
+    <header class="schedule-header">
+      <h1 id="schedule-heading" class="page-title">РАСПИСАНИЕ ЗАНЯТИЙ</h1>
+      <p class="page-subtitle">Выберите удобное время и запишитесь онлайн. Доступна отмена за 2 часа до старта.</p>
+    </header>
+
+    <!-- Карусель / переключатель дней недели (ПН 17 НОЯБРЯ — ВС 23 НОЯБРЯ) -->
+    <nav class="day-switcher-carousel" aria-label="Выбор дня недели">
+      <ul class="day-tabs-list">
+        {% for day in week_days %}
+        <li class="day-tab-item">
+          <a href="?date={{ day.date_str }}{% if selected_hall %}&hall={{ selected_hall }}{% endif %}{% if selected_style %}&style={{ selected_style }}{% endif %}" 
+             class="day-tab-btn {% if selected_date == day.date_str %}active{% endif %}">
+            <span class="day-name">{{ day.day_name }}</span>
+            <span class="day-date">{{ day.day_num }} {{ day.month_name }}</span>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </nav>
+
+    <!-- Панель фильтров: залы, стили, уровень, преподаватель, сброс -->
+    <section class="filter-bar-card" aria-label="Фильтры расписания">
+      <form method="GET" action="{% url 'schedule' %}" class="filter-form">
+        {% if selected_date %}
+          <input type="hidden" name="date" value="{{ selected_date }}">
+        {% endif %}
+
+        <div class="filter-col">
+          <label for="hall-select" class="sr-only">Выбор зала</label>
+          <select name="hall" id="hall-select" class="form-select" onchange="this.form.submit()">
+            <option value="">Зал: Все залы ({{ halls.count }})</option>
+            {% for hall in halls %}
+              <option value="{{ hall.id }}" {% if selected_hall == hall.id|stringformat:"s" %}selected{% endif %}>
+                {{ hall.name }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="filter-col">
+          <label for="style-select" class="sr-only">Выбор направления</label>
+          <select name="style" id="style-select" class="form-select" onchange="this.form.submit()">
+            <option value="">Стиль: Все направления</option>
+            {% for st in styles %}
+              <option value="{{ st.id }}" {% if selected_style == st.id|stringformat:"s" %}selected{% endif %}>
+                {{ st.name }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="filter-col">
+          <label for="diff-select" class="sr-only">Уровень сложности</label>
+          <select name="difficulty" id="diff-select" class="form-select" onchange="this.form.submit()">
+            <option value="">Уровень: Все уровни</option>
+            {% for code, label in difficulty_choices %}
+              <option value="{{ code }}" {% if selected_difficulty == code %}selected{% endif %}>
+                {{ label }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="filter-col">
+          <label for="teacher-select" class="sr-only">Преподаватель</label>
+          <select name="teacher" id="teacher-select" class="form-select" onchange="this.form.submit()">
+            <option value="">Преподаватель: Любой</option>
+            {% for t in teachers %}
+              <option value="{{ t.id }}" {% if selected_teacher == t.id|stringformat:"s" %}selected{% endif %}>
+                {{ t.user.get_full_name|default:t.user.username }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="filter-col-reset">
+          <a href="{% url 'schedule' %}" class="btn btn-secondary btn-sm btn-reset">Сбросить</a>
+        </div>
+      </form>
+    </section>
+
+    <!-- Список занятий (слоты сетки) -->
+    <div class="schedule-slots-container">
+      {% for slot in page_obj %}
+      <article class="slot-row-card {% if slot.free_spots == 0 or slot.is_canceled %}slot-full{% endif %} stripe-{% cycle 'orange' 'blue' 'gray' 'teal' %}">
+        
+        <!-- Время и длительность -->
+        <div class="slot-time-block">
+          <time class="slot-time">{{ slot.start_time|time:"H:i" }} — {{ slot.end_time|time:"H:i" }}</time>
+          <span class="slot-duration">Длительность: {{ slot.duration_minutes }} мин</span>
+          <span class="slot-date-badge">{{ slot.date|date:"d E" }}</span>
+        </div>
+
+        <!-- Направление и хореограф -->
+        <div class="slot-info-block">
+          <div class="slot-title-line">
+            <h2 class="slot-style-title">{{ slot.style.name|upper }}</h2>
+            <span class="badge badge-difficulty badge-diff-{{ slot.style.difficulty_level }}">
+              {{ slot.style.get_difficulty_level_display|upper }}
+            </span>
+            {% if slot.replacement_teacher %}
+              <span class="badge badge-warning">ЗАМЕНА ПЕДАГОГА</span>
+            {% endif %}
+            {% if slot.is_canceled %}
+              <span class="badge badge-error">ОТМЕНЕНО СТУДИЕЙ</span>
+            {% endif %}
+          </div>
+          <p class="slot-meta">
+            Инструктор: <strong>{% if slot.replacement_teacher %}{{ slot.replacement_teacher.user.get_full_name }}{% else %}{{ slot.teacher.user.get_full_name }}{% endif %}</strong> 
+            • {{ slot.style.description|default:"Базовый шаг, музыкальность и пластика"|truncatewords:8 }}
+          </p>
+        </div>
+
+        <!-- Зал -->
+        <div class="slot-hall-block">
+          <strong class="slot-hall-name">{{ slot.hall.name }}</strong>
+          <span class="slot-hall-cap">Вместимость: {{ slot.capacity_limit }} чел</span>
+        </div>
+
+        <!-- Статус наличия мест -->
+        <div class="slot-availability-block">
+          {% if slot.is_canceled %}
+            <span class="status-pill status-gray">Отменено</span>
+          {% elif slot.free_spots > 1 %}
+            <span class="status-pill status-green">Свободно {{ slot.free_spots }} мест</span>
+          {% elif slot.free_spots == 1 %}
+            <span class="status-pill status-amber">⚠ Осталось 1 место</span>
+          {% else %}
+            <span class="status-pill status-gray">Мест нет (0/{{ slot.capacity_limit }})</span>
+          {% endif %}
+        </div>
+
+        <!-- Кнопка бронирования -->
+        <div class="slot-action-block">
+          {% if slot.is_canceled or slot.free_spots == 0 %}
+            <button type="button" class="btn btn-secondary btn-sm btn-disabled" disabled>Лист ожидания</button>
+          {% else %}
+            <a href="{% url 'booking' slot.id %}" class="btn btn-primary btn-sm btn-slot-book">Записаться</a>
+          {% endif %}
+        </div>
+
+      </article>
+      {% empty %}
+      <div class="empty-schedule-card">
+        <p class="empty-schedule-text">На выбранную дату или параметры фильтрации занятий не найдено.</p>
+        <a href="{% url 'schedule' %}" class="btn btn-primary btn-sm">Показать все занятия</a>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Блок пагинации (по 20 записей согласно ТЗ) -->
+    {% if page_obj.has_other_pages %}
+    <nav class="pagination-nav" aria-label="Постраничная навигация">
+      <ul class="pagination-list">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a href="?page={{ page_obj.previous_page_number }}{% if selected_date %}&date={{ selected_date }}{% endif %}{% if selected_hall %}&hall={{ selected_hall }}{% endif %}{% if selected_style %}&style={{ selected_style }}{% endif %}" class="page-link prev">← Назад</a>
+        </li>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+          {% if page_obj.number == num %}
+            <li class="page-item active" aria-current="page">
+              <span class="page-link">{{ num }}</span>
+            </li>
+          {% else %}
+            <li class="page-item">
+              <a href="?page={{ num }}{% if selected_date %}&date={{ selected_date }}{% endif %}{% if selected_hall %}&hall={{ selected_hall }}{% endif %}{% if selected_style %}&style={{ selected_style }}{% endif %}" class="page-link">{{ num }}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <li class="page-item">
+          <a href="?page={{ page_obj.next_page_number }}{% if selected_date %}&date={{ selected_date }}{% endif %}{% if selected_hall %}&hall={{ selected_hall }}{% endif %}{% if selected_style %}&style={{ selected_style }}{% endif %}" class="page-link next">Вперед →</a>
+        </li>
+        {% endif %}
+      </ul>
+      <p class="pagination-info">Показано {{ page_obj.start_index }}–{{ page_obj.end_index }} из {{ page_obj.paginator.count }} занятий</p>
+    </nav>
+    {% endif %}
+
+  </div>
+</section>
+{% endblock %}

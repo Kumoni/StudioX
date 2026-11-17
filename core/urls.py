@@ -6,7 +6,8 @@ urlpatterns = [
     path('', views.home_view, name='home'),
     
     # Расписание занятий
-    path('shedule/', views.schedule_view, name='schedule'),
+    path('schedule/', views.schedule_view, name='schedule'),
+    path('shedule/', views.schedule_view),
     
     # Каталог стилей
     path('styles/', views.styles_view, name='styles'),
