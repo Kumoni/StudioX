@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
 from django.utils import timezone
-from datetime import date, timedelta
+from datetime import datetime, date, timedelta
 from .models import (
     User, DanceStyle, Hall, Teacher, ClassSchedule,
     SubscriptionTariff, Booking, UserSubscription
@@ -137,13 +137,115 @@ def styles_view(request):
 
 
 def profile_view(request):
-    """Личный кабинет ученика (заготовка под Занятие 8 шаг 2)"""
-    return HttpResponse("Личный кабинет ученика")
+    """
+    Личный кабинет ученика по макету ЛичныйКабинет.png:
+    - Персональные данные и статус ученика
+    - Карточка активного абонемента с остатком и шкалой прогресса
+    - Таблица активных броней с проверкой правила отмены за 2 часа
+    - История посещенных занятий со статусами списания
+    """
+    user_id = request.GET.get('user_id', 6)
+    try:
+        student = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        student = User.objects.filter(role='student').first()
+
+    # Активные абонементы
+    active_subscriptions = student.subscriptions.filter(status='active').select_related('tariff').order_by('-start_date')
+    current_sub = active_subscriptions.first()
+
+    if current_sub and current_sub.tariff.classes_count:
+        current_sub.progress_pct = int((current_sub.remaining_classes / current_sub.tariff.classes_count) * 100)
+        current_sub.used_classes = max(0, current_sub.tariff.classes_count - current_sub.remaining_classes)
+    elif current_sub:
+        current_sub.progress_pct = 100
+        current_sub.used_classes = 0
+
+    # Бронирования: предстоящие и история
+    all_bookings = student.bookings.select_related(
+        'schedule__style', 'schedule__hall', 'schedule__teacher__user', 'subscription__tariff'
+    ).order_by('schedule__date', 'schedule__start_time')
+
+    now_dt = datetime(2026, 11, 17, 12, 0)
+
+    upcoming_bookings = []
+    history_bookings = []
+
+    for b in all_bookings:
+        slot_dt = datetime.combine(b.schedule.date, b.schedule.start_time)
+        diff_hours = (slot_dt - now_dt).total_seconds() / 3600.0
+        b.can_cancel = (diff_hours >= 2.0)
+        b.hours_left = max(0, round(diff_hours, 1))
+
+        if b.status == 'booked' and slot_dt >= now_dt:
+            upcoming_bookings.append(b)
+        else:
+            history_bookings.append(b)
+
+    history_bookings.reverse()
+
+    context = {
+        'student': student,
+        'current_sub': current_sub,
+        'active_subscriptions': active_subscriptions,
+        'upcoming_bookings': upcoming_bookings,
+        'history_bookings': history_bookings,
+        'now_dt': now_dt,
+    }
+    return render(request, 'core/profile.html', context)
 
 
 def journal_view(request):
-    """Электронный журнал преподавателя (заготовка под Занятие 8 шаг 2)"""
-    return HttpResponse("Журнал преподавателя")
+    """
+    Электронный журнал преподавателя по макету ЖурналПреподавателя.png:
+    - Выбор слота расписания преподавателя
+    - Сводка заполняемости и посещаемости группы
+    - Список записанных студентов с переключателями статуса (Присутствовал / Пропуск)
+    """
+    teacher_id = request.GET.get('teacher_id')
+    if teacher_id:
+        teacher = get_object_or_404(Teacher, id=teacher_id)
+    else:
+        teacher = Teacher.objects.filter(user__username='t_elena').first() or Teacher.objects.first()
+
+    # Все слоты преподавателя
+    teacher_slots = ClassSchedule.objects.filter(
+        Q(teacher=teacher) | Q(replacement_teacher=teacher)
+    ).select_related('style', 'hall').order_by('-date', '-start_time')
+
+    # Выбранный слот
+    slot_id = request.GET.get('slot_id')
+    if slot_id:
+        current_slot = get_object_or_404(ClassSchedule, id=slot_id)
+    else:
+        current_slot = teacher_slots.annotate(cnt=Count('bookings')).order_by('-cnt').first()
+
+    # Записи учеников на текущий слот
+    bookings = []
+    stats = {'total': 0, 'attended': 0, 'missed': 0, 'booked': 0, 'rate': 0}
+    if current_slot:
+        bookings = list(current_slot.bookings.select_related(
+            'user', 'subscription__tariff'
+        ).order_by('user__last_name', 'user__first_name'))
+
+        stats['total'] = len(bookings)
+        stats['attended'] = sum(1 for b in bookings if b.status == 'attended')
+        stats['missed'] = sum(1 for b in bookings if b.status in ['missed', 'canceled_penalty'])
+        stats['booked'] = sum(1 for b in bookings if b.status == 'booked')
+        if stats['total'] > 0:
+            stats['rate'] = int((stats['attended'] / stats['total']) * 100)
+
+    all_teachers = Teacher.objects.filter(is_active=True).select_related('user')
+
+    context = {
+        'teacher': teacher,
+        'all_teachers': all_teachers,
+        'teacher_slots': teacher_slots,
+        'current_slot': current_slot,
+        'bookings': bookings,
+        'stats': stats,
+    }
+    return render(request, 'core/journal.html', context)
 
 
 def booking_view(request, schedule_id):

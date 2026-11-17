@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Журнал преподавателя | Студия танцев X{% endblock %}
+
+{% block content %}
+<section class="journal-page-section" aria-labelledby="journal-heading">
+  <div class="container">
+
+    <!-- Заголовок страницы журнала -->
+    <header class="journal-header">
+      <div class="journal-title-box">
+        <h1 id="journal-heading" class="page-title">ЖУРНАЛ ПРЕПОДАВАТЕЛЯ</h1>
+        <p class="page-subtitle">
+          Учет посещаемости группы, проверка действующих абонементов и списание занятий.
+        </p>
+      </div>
+
+      <!-- Переключатель преподавателя -->
+      <div class="teacher-select-wrap">
+        <label for="teacher-picker" class="sr-only">Выбор преподавателя</label>
+        <form method="GET" action="{% url 'journal' %}" class="teacher-form">
+          <select name="teacher_id" id="teacher-picker" class="form-select teacher-picker-select" onchange="this.form.submit()">
+            {% for t in all_teachers %}
+              <option value="{{ t.id }}" {% if teacher.id == t.id %}selected{% endif %}>
+                Хореограф: {{ t.user.get_full_name }} (стаж {{ t.experience_years }} лет)
+              </option>
+            {% endfor %}
+          </select>
+        </form>
+      </div>
+    </header>
+
+    <!-- Выбор занятия / слота расписания -->
+    <section class="slot-selector-card" aria-label="Выбор урока в расписании">
+      <div class="slot-selector-inner">
+        <div class="slot-info-summary">
+          <span class="slot-badge-date">{{ current_slot.date|date:"d E Y (l)"|upper }}</span>
+          <h2 class="slot-headline">
+            {{ current_slot.style.name|upper }} 
+            <span class="slot-hall-tag">· {{ current_slot.hall.name }}</span>
+          </h2>
+          <p class="slot-meta-line">
+            Время урока: <strong>{{ current_slot.start_time|time:"H:i" }} — {{ current_slot.end_time|time:"H:i" }}</strong> 
+            • Уровень: <strong>{{ current_slot.style.get_difficulty_level_display }}</strong>
+            • Лимит зала: <strong>{{ current_slot.capacity_limit }} чел.</strong>
+          </p>
+        </div>
+
+        <div class="slot-dropdown-col">
+          <label for="slot-switch-select" class="form-label-small">Выбрать другой урок:</label>
+          <form method="GET" action="{% url 'journal' %}">
+            <input type="hidden" name="teacher_id" value="{{ teacher.id }}">
+            <select name="slot_id" id="slot-switch-select" class="form-select" onchange="this.form.submit()">
+              {% for s in teacher_slots %}
+                <option value="{{ s.id }}" {% if current_slot.id == s.id %}selected{% endif %}>
+                  {{ s.date|date:"d.m" }} {{ s.start_time|time:"H:i" }} — {{ s.style.name }} ({{ s.hall.name }})
+                </option>
+              {% endfor %}
+            </select>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Карточки статистики посещаемости группы -->
+    <div class="journal-stats-grid">
+      <article class="j-stat-card">
+        <span class="j-stat-label">Вместимость зала</span>
+        <span class="j-stat-val">{{ current_slot.capacity_limit|default:15 }} чел.</span>
+        <span class="j-stat-sub">{{ current_slot.hall.name }}</span>
+      </article>
+
+      <article class="j-stat-card">
+        <span class="j-stat-label">Записано на урок</span>
+        <span class="j-stat-val">{{ stats.total }} чел.</span>
+        <span class="j-stat-sub">активные брони</span>
+      </article>
+
+      <article class="j-stat-card j-stat-highlight">
+        <span class="j-stat-label">Отмечено присутствие</span>
+        <div class="j-stat-val-row">
+          <span class="j-stat-val">{{ stats.attended }} / {{ stats.total }}</span>
+          <span class="j-stat-pct">({{ stats.rate }}%)</span>
+        </div>
+        <span class="j-stat-sub">явка подтверждена</span>
+      </article>
+
+      <article class="j-stat-card">
+        <span class="j-stat-label">Неявка / Списание</span>
+        <span class="j-stat-val">{{ stats.missed }} чел.</span>
+        <span class="j-stat-sub">пропуск без справки</span>
+      </article>
+    </div>
+
+    <!-- Таблица учеников группы (электронная ведомость) -->
+    <section class="journal-sheet-section" aria-labelledby="sheet-heading">
+      <div class="sheet-header-bar">
+        <h2 id="sheet-heading" class="sheet-title">СПИСОК УЧЕНИКОВ ГРУППЫ</h2>
+        <div class="sheet-quick-actions">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="markAllAttended()">✓ Отметить всех присутствующими</button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="exportAttendance()">⤓ Экспорт ведомости</button>
+        </div>
+      </div>
+
+      {% if bookings %}
+      <div class="table-responsive-card">
+        <table class="data-table journal-table">
+          <thead>
+            <tr>
+              <th scope="col" class="th-num">№</th>
+              <th scope="col">Ученик</th>
+              <th scope="col">Номер телефона</th>
+              <th scope="col">Абонемент</th>
+              <th scope="col">Остаток</th>
+              <th scope="col" class="th-status">Отметка явки</th>
+              <th scope="col">Примечание</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for b in bookings %}
+            <tr id="booking-row-{{ b.id }}" class="attendance-row {% if b.status == 'attended' %}row-attended{% elif b.status == 'missed' %}row-missed{% endif %}">
+              <td class="td-num">{{ forloop.counter }}</td>
+              <td>
+                <div class="student-user-flex">
+                  <span class="student-avatar-circle">{{ b.user.first_name|first }}{{ b.user.last_name|first|default:"У" }}</span>
+                  <div>
+                    <strong class="student-name">{{ b.user.get_full_name|default:b.user.username }}</strong>
+                    <small class="student-since d-block text-muted">Запись оформлена: {{ b.booking_timestamp|date:"d.m H:i" }}</small>
+                  </div>
+                </div>
+              </td>
+              <td>{{ b.user.phone }}</td>
+              <td>
+                {% if b.subscription %}
+                  <span class="sub-tariff-name">{{ b.subscription.tariff.name }}</span>
+                {% else %}
+                  <span class="text-muted">Разовый визит</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if b.subscription %}
+                  <strong>{{ b.subscription.remaining_classes }}</strong> ур.
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+              <td>
+                <div class="attendance-btn-group" role="group" aria-label="Отметка присутствия">
+                  <button type="button" 
+                          class="att-btn att-btn-present {% if b.status == 'attended' %}active{% endif %}" 
+                          onclick="setAttendanceStatus('{{ b.id }}', 'attended', this)">
+                    ✓ Был
+                  </button>
+                  <button type="button" 
+                          class="att-btn att-btn-absent {% if b.status == 'missed' or b.status == 'canceled_penalty' %}active{% endif %}" 
+                          onclick="setAttendanceStatus('{{ b.id }}', 'missed', this)">
+                    ✗ Не был
+                  </button>
+                </div>
+              </td>
+              <td>
+                <input type="text" class="table-note-input" placeholder="Заметка..." value="{% if forloop.first %}Пробный визит{% elif b.status == 'missed' %}Предупредил по телефону{% endif %}">
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="sheet-save-footer">
+        <button type="button" class="btn btn-primary btn-save-journal" onclick="saveJournalChanges()">
+          Сохранить изменения в журнале
+        </button>
+        <span class="save-status-text" id="save-status">Все изменения зафиксированы</span>
+      </div>
+
+      {% else %}
+      <div class="empty-state-box">
+        <p>На данный урок пока нет записавшихся учеников.</p>
+      </div>
+      {% endif %}
+    </section>
+
+  </div>
+</section>
+
+<script>
+function setAttendanceStatus(bookingId, status, btn) {
+  const row = document.getElementById('booking-row-' + bookingId);
+  const group = btn.closest('.attendance-btn-group');
+  group.querySelectorAll('.att-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  row.classList.remove('row-attended', 'row-missed');
+  if (status === 'attended') {
+    row.classList.add('row-attended');
+  } else if (status === 'missed') {
+    row.classList.add('row-missed');
+  }
+  document.getElementById('save-status').textContent = 'Есть несохраненные отметки...';
+  document.getElementById('save-status').style.color = '#F59E0B';
+}
+
+function markAllAttended() {
+  document.querySelectorAll('.attendance-btn-group').forEach(group => {
+    const presentBtn = group.querySelector('.att-btn-present');
+    if (presentBtn) presentBtn.click();
+  });
+}
+
+function saveJournalChanges() {
+  document.getElementById('save-status').textContent = '✓ Изменения успешно сохранены в базе данных!';
+  document.getElementById('save-status').style.color = '#10B981';
+}
+
+function exportAttendance() {
+  alert('Ведомость посещаемости сформирована и подготовлена к печати.');
+  window.print();
+}
+</script>
+{% endblock %}

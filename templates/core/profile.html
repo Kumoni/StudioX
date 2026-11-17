@@ -1,0 +1,226 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Личный кабинет ученика | Студия танцев X{% endblock %}
+
+{% block content %}
+<section class="profile-page-section" aria-labelledby="profile-heading">
+  <div class="container">
+
+    <!-- Заголовок и карточка профиля ученика -->
+    <header class="profile-user-header">
+      <div class="profile-avatar-box">
+        <span class="avatar-initials">{{ student.first_name|first }}{{ student.last_name|first|default:"X" }}</span>
+      </div>
+      <div class="profile-user-info">
+        <div class="profile-name-row">
+          <h1 id="profile-heading" class="profile-user-name">{{ student.get_full_name|default:student.username }}</h1>
+          <span class="badge badge-role">{{ student.get_role_display|upper }}</span>
+        </div>
+        <p class="profile-user-meta">
+          <span>Телефон: <strong>{{ student.phone }}</strong></span> • 
+          <span>Email: <strong>{{ student.email|default:"student@x-dance.ru" }}</strong></span> • 
+          <span>В студии с {{ student.date_joined|date:"d E Y" }}</span>
+        </p>
+      </div>
+      <div class="profile-quick-actions">
+        <a href="{% url 'schedule' %}" class="btn btn-primary btn-sm">Записаться на занятие</a>
+        <a href="{% url 'tariffs' %}" class="btn btn-secondary btn-sm">Купить абонемент</a>
+      </div>
+    </header>
+
+    <!-- Сетка: Активный абонемент + Статистика -->
+    <div class="profile-cards-grid">
+      
+      <!-- Карточка действующего абонемента (по макету Figma) -->
+      <article class="sub-card sub-card-active" aria-labelledby="active-sub-heading">
+        <header class="sub-card-header">
+          <div>
+            <span class="sub-card-label">ДЕЙСТВУЮЩИЙ АБОНЕМЕНТ</span>
+            <h2 id="active-sub-heading" class="sub-tariff-title">
+              {{ current_sub.tariff.name|default:"Абонемент Стандарт (8 занятий)" }}
+            </h2>
+          </div>
+          <span class="status-pill status-green">
+            {{ current_sub.get_status_display|default:"Активен" }}
+          </span>
+        </header>
+
+        <div class="sub-balance-row">
+          <div class="sub-stat-col">
+            <span class="stat-number">{{ current_sub.remaining_classes|default:5 }}</span>
+            <span class="stat-desc">
+              осталось из {{ current_sub.tariff.classes_count|default:8 }} {{ current_sub.tariff.classes_count|default:8|pluralize:"занятия,занятий" }}
+            </span>
+          </div>
+          <div class="sub-stat-col text-right">
+            <span class="stat-expiry-date">{{ current_sub.end_date|date:"d E Y"|default:"15 декабря 2026" }}</span>
+            <span class="stat-desc">срок действия до</span>
+          </div>
+        </div>
+
+        <!-- Шкала прогресса занятий -->
+        <div class="sub-progress-wrap">
+          <div class="sub-progress-bar" role="progressbar" aria-valuenow="{{ current_sub.progress_pct|default:62 }}" aria-valuemin="0" aria-valuemax="100">
+            <div class="sub-progress-fill" style="width: {{ current_sub.progress_pct|default:62 }}%;"></div>
+          </div>
+          <div class="sub-progress-labels">
+            <span>Использовано: {{ current_sub.used_classes|default:3 }}</span>
+            <span>Остаток: {{ current_sub.remaining_classes|default:5 }}</span>
+          </div>
+        </div>
+
+        <footer class="sub-card-footer">
+          <button type="button" class="btn btn-outline btn-sm" onclick="alert('Заморозка абонемента: доступно 14 дней. Обратитесь к администратору или воспользуйтесь онлайн-заявкой.')">
+            ❄ Заморозить абонемент
+          </button>
+          <a href="{% url 'tariffs' %}" class="btn btn-link btn-sm">Продлить со скидкой →</a>
+        </footer>
+      </article>
+
+      <!-- Карточка правил посещения и отмены -->
+      <article class="sub-card sub-card-info" aria-labelledby="studio-notice-heading">
+        <header class="sub-card-header">
+          <h2 id="studio-notice-heading" class="sub-tariff-title">ПРАВИЛО ОТМЕНЫ 2 ЧАСА</h2>
+        </header>
+        <p class="notice-text">
+          Отмена записи без списания занятия возможна строго не позднее чем за <strong>2 часа до начала</strong> урока.
+        </p>
+        <div class="notice-alert-box">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <p>При отмене менее чем за 2 часа занятие автоматически списывается с текущего абонемента.</p>
+        </div>
+        <p class="notice-footer-meta">При опоздании более чем на 15 минут допуск в зал на разминку ограничен в целях безопасности.</p>
+      </article>
+
+    </div>
+
+    <!-- Раздел 1: Предстоящие записи ученика -->
+    <section class="profile-section" aria-labelledby="upcoming-classes-heading">
+      <div class="section-header-flex">
+        <h2 id="upcoming-classes-heading" class="section-title">МОИ ПРЕДСТОЯЩИЕ ЗАНЯТИЯ</h2>
+        <span class="badge badge-counter">{{ upcoming_bookings|length }} записей</span>
+      </div>
+
+      {% if upcoming_bookings %}
+      <div class="table-responsive-card">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th scope="col">Дата и время</th>
+              <th scope="col">Направление</th>
+              <th scope="col">Зал</th>
+              <th scope="col">Хореограф</th>
+              <th scope="col">Статус</th>
+              <th scope="col" class="text-right">Действие</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for b in upcoming_bookings %}
+            <tr>
+              <td>
+                <div class="table-datetime-cell">
+                  <strong>{{ b.schedule.date|date:"d E (D)" }}</strong>
+                  <time class="table-time-text">{{ b.schedule.start_time|time:"H:i" }} — {{ b.schedule.end_time|time:"H:i" }}</time>
+                </div>
+              </td>
+              <td>
+                <strong class="table-style-name">{{ b.schedule.style.name|upper }}</strong>
+                <span class="badge badge-difficulty badge-diff-{{ b.schedule.style.difficulty_level }}">
+                  {{ b.schedule.style.get_difficulty_level_display }}
+                </span>
+              </td>
+              <td>{{ b.schedule.hall.name }}</td>
+              <td>{{ b.schedule.teacher.user.get_full_name }}</td>
+              <td>
+                <span class="status-pill status-green">{{ b.get_status_display }}</span>
+              </td>
+              <td class="text-right">
+                {% if b.can_cancel %}
+                  <button type="button" class="btn btn-secondary btn-sm btn-cancel-act" onclick="confirmCancel('{{ b.id }}', '{{ b.schedule.style.name }}', '{{ b.schedule.date|date:"d.m.Y" }} {{ b.schedule.start_time|time:"H:i" }}')">
+                    Отменить запись
+                  </button>
+                  <small class="cancel-note text-muted d-block">без списания (&gt;2ч)</small>
+                {% else %}
+                  <span class="badge badge-warning" title="До начала урока осталось менее 2 часов">Отмена со списанием (&lt; 2 ч)</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state-box">
+        <p>У вас пока нет активных записей на предстоящие занятия.</p>
+        <a href="{% url 'schedule' %}" class="btn btn-primary btn-sm">Открыть расписание</a>
+      </div>
+      {% endif %}
+    </section>
+
+    <!-- Раздел 2: История посещений и списаний -->
+    <section class="profile-section" aria-labelledby="history-classes-heading">
+      <div class="section-header-flex">
+        <h2 id="history-classes-heading" class="section-title">ИСТОРИЯ ПОСЕЩЕНИЙ</h2>
+        <span class="badge badge-counter">{{ history_bookings|length }} записей</span>
+      </div>
+
+      {% if history_bookings %}
+      <div class="table-responsive-card">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th scope="col">Дата урока</th>
+              <th scope="col">Направление</th>
+              <th scope="col">Зал</th>
+              <th scope="col">Преподаватель</th>
+              <th scope="col">Списанный абонемент</th>
+              <th scope="col" class="text-right">Итог</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for b in history_bookings %}
+            <tr>
+              <td>
+                <strong>{{ b.schedule.date|date:"d.m.Y" }}</strong>
+                <time class="table-time-text">{{ b.schedule.start_time|time:"H:i" }}</time>
+              </td>
+              <td>{{ b.schedule.style.name }}</td>
+              <td>{{ b.schedule.hall.name }}</td>
+              <td>{{ b.schedule.teacher.user.get_full_name }}</td>
+              <td>{{ b.subscription.tariff.name|default:"Разовое посещение" }}</td>
+              <td class="text-right">
+                {% if b.status == 'attended' %}
+                  <span class="status-pill status-green">✓ Посетил</span>
+                {% elif b.status == 'canceled' %}
+                  <span class="status-pill status-gray">Отменено вовремя</span>
+                {% elif b.status == 'canceled_penalty' %}
+                  <span class="status-pill status-amber">Поздняя отмена</span>
+                {% elif b.status == 'missed' %}
+                  <span class="status-pill status-gray">Неявка</span>
+                {% else %}
+                  <span class="status-pill status-gray">{{ b.get_status_display }}</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="text-muted">История посещений пока пуста.</p>
+      {% endif %}
+    </section>
+
+  </div>
+</section>
+
+<script>
+function confirmCancel(bookingId, styleName, dateTime) {
+  if (confirm('Вы уверены, что хотите отменить запись на ' + styleName + ' (' + dateTime + ')? Занятие вернется на баланс вашего абонемента.')) {
+    alert('Запись успешно отменена!');
+    location.reload();
+  }
+}
+</script>
+{% endblock %}
