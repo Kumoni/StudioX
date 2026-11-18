@@ -12,6 +12,7 @@ urlpatterns = [
     path('tariffs/', views.tariffs_view, name='tariffs'),
     
     path('profile/', views.profile_view, name='profile'),
+    path('freeze-subscription/', views.freeze_subscription_view, name='freeze_subscription'),
     
     path('journal/', views.journal_view, name='journal'),
     

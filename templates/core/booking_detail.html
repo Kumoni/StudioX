@@ -19,40 +19,13 @@
       <p class="page-subtitle">Подтвердите бронирование места в зале и способ списания занятия.</p>
     </header>
 
-    {% if booking_success %}
-    
-    <article class="booking-feedback-card booking-success-card" aria-live="polite">
-      <div class="feedback-icon-box success-icon" aria-hidden="true">
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-      </div>
-      <h2 class="feedback-title">ВЫ УСПЕШНО ЗАПИСАНЫ!</h2>
-      <p class="feedback-text">
-        Место на занятии <strong>{{ slot.style.name|upper }}</strong> забронировано за вами.
-      </p>
-      
-      <div class="booking-summary-pill">
-        <span>{{ slot.date|date:"d E Y" }}</span> • 
-        <span>{{ slot.start_time|time:"H:i" }} — {{ slot.end_time|time:"H:i" }}</span> • 
-        <span>{{ slot.hall.name }}</span>
-      </div>
-
-      <p class="feedback-subtext">
-        Напоминаем: бесплатная отмена записи доступна в Личном кабинете не позднее чем за 2 часа до старта.
-      </p>
-
-      <div class="feedback-actions">
-        <a href="{% url 'profile' %}" class="btn btn-primary btn-md">Перейти в личный кабинет</a>
-        <a href="{% url 'schedule' %}" class="btn btn-secondary btn-md">Вернуться к расписанию</a>
-      </div>
-    </article>
-
-    {% else %}
-
     <article class="booking-card-main">
       
-      {% if error_message %}
+      {% if form.non_field_errors %}
       <div class="alert alert-error" role="alert">
-        {{ error_message }}
+        {% for err in form.non_field_errors %}
+          <p>{{ err }}</p>
+        {% endfor %}
       </div>
       {% endif %}
 
@@ -97,29 +70,42 @@
         </div>
       </div>
 
-      <form method="POST" action="{% url 'booking' slot.id %}" class="booking-form">
+      <form method="POST" action="{% url 'booking' slot.id %}" class="booking-form" novalidate id="bookingForm">
         {% csrf_token %}
 
         <div class="form-section">
-          <h3 class="form-section-title">Данные ученика</h3>
-          <div class="student-profile-strip">
-            <div class="student-avatar-small">
-              <span>{{ student.first_name|first }}{{ student.last_name|first }}</span>
-            </div>
-            <div>
-              <strong class="student-name-text">{{ student.get_full_name|default:student.username }}</strong>
-              <span class="student-phone-text">{{ student.phone }}</span>
-            </div>
+          <h3 class="form-section-title">Контактные данные</h3>
+          
+          <div class="form-group {% if form.full_name.errors %}has-error{% endif %}">
+            <label for="{{ form.full_name.id_for_label }}" class="form-label">
+              {{ form.full_name.label }} <span class="required-star">*</span>
+            </label>
+            {{ form.full_name }}
+            {% if form.full_name.errors %}
+              <div class="field-error-msg" role="alert">{{ form.full_name.errors.0 }}</div>
+            {% endif %}
+            <small class="field-hint">Укажите имя и фамилию для внесения в журнал группы</small>
+          </div>
+
+          <div class="form-group {% if form.phone.errors %}has-error{% endif %}">
+            <label for="{{ form.phone.id_for_label }}" class="form-label">
+              {{ form.phone.label }} <span class="required-star">*</span>
+            </label>
+            {{ form.phone }}
+            {% if form.phone.errors %}
+              <div class="field-error-msg" role="alert">{{ form.phone.errors.0 }}</div>
+            {% endif %}
+            <small class="field-hint">Для отправки напоминаний о тренировке (+7 999 123-45-67)</small>
           </div>
         </div>
 
         <div class="form-section">
-          <h3 class="form-section-title">Способ посещения</h3>
+          <h3 class="form-section-title">Способ списания / оплаты</h3>
 
           <div class="payment-options-list">
             {% if active_sub %}
-            <label class="payment-option-card active">
-              <input type="radio" name="payment_method" value="subscription" checked>
+            <label class="payment-option-card {% if form.payment_method.value == 'subscription' or not form.payment_method.value %}active{% endif %}">
+              <input type="radio" name="payment_method" value="subscription" {% if form.payment_method.value == 'subscription' or not form.payment_method.value %}checked{% endif %}>
               <div class="option-content">
                 <strong class="option-title">Списать с абонемента «{{ active_sub.tariff.name }}»</strong>
                 <span class="option-desc">
@@ -132,12 +118,12 @@
             {% else %}
             <div class="sub-empty-alert">
               <p>У вас нет активного абонемента с остатком занятий.</p>
-              <a href="{% url 'tariffs' %}" class="btn btn-secondary btn-sm" target="_blank">Купить абонемент со скидкой</a>
+              <a href="{% url 'tariffs' %}" class="btn btn-secondary btn-sm" target="_blank">Купить абонемент</a>
             </div>
             {% endif %}
 
-            <label class="payment-option-card {% if not active_sub %}active{% endif %}">
-              <input type="radio" name="payment_method" value="single" {% if not active_sub %}checked{% endif %}>
+            <label class="payment-option-card {% if form.payment_method.value == 'single' or not active_sub %}active{% endif %}">
+              <input type="radio" name="payment_method" value="single" {% if form.payment_method.value == 'single' or not active_sub %}checked{% endif %}>
               <div class="option-content">
                 <strong class="option-title">Оплата разового занятия у администратора</strong>
                 <span class="option-desc">Стоимость разового посещения 800 ₽. Оплата картой или наличными перед началом урока.</span>
@@ -145,6 +131,9 @@
               <span class="option-price">800 ₽</span>
             </label>
           </div>
+          {% if form.payment_method.errors %}
+            <div class="field-error-msg" role="alert">{{ form.payment_method.errors.0 }}</div>
+          {% endif %}
         </div>
 
         <div class="cancel-policy-notice">
@@ -154,14 +143,24 @@
           <div>
             <strong class="policy-headline">Правило отмены за 2 часа</strong>
             <p class="policy-text">
-              Бесплатная отмена возможна не позднее чем за 2 часа до старта тренировки. При поздней отмене занятие списывается с вашего баланса.
+              Бесплатная отмена возможна не позднее чем за 2 часа до старта тренировки в Личном кабинете. При поздней отмене занятие списывается.
             </p>
           </div>
         </div>
 
+        <div class="form-group form-checkbox-group {% if form.agree_rules.errors %}has-error{% endif %}">
+          <label class="checkbox-label" for="{{ form.agree_rules.id_for_label }}">
+            {{ form.agree_rules }}
+            <span>{{ form.agree_rules.label }} <span class="required-star">*</span></span>
+          </label>
+          {% if form.agree_rules.errors %}
+            <div class="field-error-msg" role="alert">{{ form.agree_rules.errors.0 }}</div>
+          {% endif %}
+        </div>
+
         <div class="booking-actions-row">
           {% if slot.free_spots > 0 and not slot.is_canceled %}
-            <button type="submit" class="btn btn-primary btn-lg btn-confirm-booking">
+            <button type="submit" class="btn btn-primary btn-lg btn-confirm-booking" id="submitBookingBtn">
               Подтвердить запись
             </button>
           {% else %}
@@ -174,7 +173,6 @@
       </form>
 
     </article>
-    {% endif %}
 
   </div>
 </section>

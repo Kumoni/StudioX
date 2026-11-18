@@ -2,11 +2,13 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
 from django.utils import timezone
+from django.contrib import messages
 from datetime import datetime, date, timedelta
 from .models import (
     User, DanceStyle, Hall, Teacher, ClassSchedule,
     SubscriptionTariff, Booking, UserSubscription
 )
+from .forms import BookingForm, SubscriptionFreezeForm, TrialClassForm
 
 def home_view(request):
     styles = DanceStyle.objects.filter(is_active=True).order_by('name')[:6]
@@ -180,12 +182,15 @@ def profile_view(request):
 
     history_bookings.reverse()
 
+    freeze_form = SubscriptionFreezeForm(subscription=current_sub)
+
     context = {
         'student': student,
         'current_sub': current_sub,
         'active_subscriptions': active_subscriptions,
         'upcoming_bookings': upcoming_bookings,
         'history_bookings': history_bookings,
+        'freeze_form': freeze_form,
         'now_dt': now_dt,
     }
     return render(request, 'core/profile.html', context)
@@ -251,18 +256,12 @@ def booking_view(request, schedule_id):
     user_subs = student.subscriptions.filter(status='active', remaining_classes__gt=0).select_related('tariff') if student else []
     active_sub = user_subs.first() if user_subs else None
 
-    booking_success = False
-    error_message = None
-
     if request.method == 'POST':
-        if slot.is_canceled:
-            error_message = 'Занятие отменено студией. Запись невозможна.'
-        elif free_spots <= 0:
-            error_message = 'К сожалению, все места на этот урок уже забронированы.'
-        elif existing_booking and existing_booking.status == 'booked':
-            error_message = 'Вы уже записаны на это занятие!'
-        else:
-            used_sub = active_sub
+        form = BookingForm(request.POST, user=student, slot=slot)
+        if form.is_valid():
+            payment_method = form.cleaned_data['payment_method']
+            used_sub = active_sub if payment_method == 'subscription' else None
+
             if used_sub:
                 used_sub.remaining_classes = max(0, used_sub.remaining_classes - 1)
                 if used_sub.remaining_classes == 0 and not used_sub.tariff.is_unlimited:
@@ -278,7 +277,15 @@ def booking_view(request, schedule_id):
                     'is_deducted': True if used_sub else False
                 }
             )
-            booking_success = True
+            messages.success(
+                request,
+                f'Вы успешно записаны на занятие по направлению {slot.style.name} ({slot.date.strftime("%d.%m")} в {slot.start_time.strftime("%H:%M")})!'
+            )
+            return redirect('profile')
+        else:
+            messages.error(request, 'Пожалуйста, проверьте введённые данные и исправьте ошибки.')
+    else:
+        form = BookingForm(user=student, slot=slot)
 
     context = {
         'slot': slot,
@@ -286,7 +293,40 @@ def booking_view(request, schedule_id):
         'active_sub': active_sub,
         'existing_booking': existing_booking,
         'free_spots': free_spots,
-        'booking_success': booking_success,
-        'error_message': error_message,
+        'form': form,
     }
     return render(request, 'core/booking_detail.html', context)
+
+
+def freeze_subscription_view(request):
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id', 6)
+        student = User.objects.filter(id=user_id, role='student').first() or User.objects.filter(role='student').first()
+        active_sub = student.subscriptions.filter(status='active').first() if student else None
+
+        if not active_sub:
+            messages.error(request, 'У вас нет активного абонемента для заморозки.')
+            return redirect('profile')
+
+        form = SubscriptionFreezeForm(request.POST, subscription=active_sub)
+        if form.is_valid():
+            days = int(form.cleaned_data['days'])
+            start_date = form.cleaned_data['start_date']
+            reason = form.cleaned_data.get('reason', '')
+
+            active_sub.end_date = active_sub.end_date + timedelta(days=days)
+            freeze_note = f'Заморозка на {days} дн. с {start_date.strftime("%d.%m")}'
+            if reason:
+                freeze_note += f' ({reason})'
+            active_sub.notes = f"{active_sub.notes}; {freeze_note}".strip('; ')
+            active_sub.save()
+
+            messages.success(
+                request,
+                f'Абонемент «{active_sub.tariff.name}» успешно заморожен на {days} дней. Срок действия продлен до {active_sub.end_date.strftime("%d.%m.%Y")}!'
+            )
+        else:
+            first_err = next(iter(form.errors.values()))[0] if form.errors else 'Ошибка валидации.'
+            messages.error(request, f'Не удалось оформить заморозку: {first_err}')
+
+    return redirect('profile')
