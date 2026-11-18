@@ -37,9 +37,13 @@
       </form>
     </div>
 
-    <div class="two-tone-styles-grid">
+    <div class="two-tone-styles-grid" id="stylesGrid">
       {% for style in styles %}
-      <article class="two-tone-card">
+      <article class="two-tone-card" 
+               data-name="{{ style.name|lower }}" 
+               data-diff="{{ style.difficulty_level }}" 
+               data-desc="{{ style.description|lower }}"
+               data-teachers="{% for t in style.teachers.all %}{{ t.user.get_full_name|lower }} {% endfor %}">
         
         <div class="card-dark-half">
           <div class="card-badges-row">
@@ -83,6 +87,10 @@
         <a href="{% url 'styles' %}" class="btn btn-secondary btn-sm" style="margin-top: 12px;">Сбросить фильтры</a>
       </div>
       {% endfor %}
+    </div>
+    <div id="liveSearchResultsEmpty" class="empty-state" style="display: none;">
+      <p>По вашему фильтру не найдено подходящих направлений.</p>
+      <button type="button" class="btn btn-secondary btn-sm" id="resetLiveFilterBtn" style="margin-top: 12px;">Сбросить фильтры</button>
     </div>
 
     <section class="teachers-section" id="teachers" aria-labelledby="teachers-heading">
