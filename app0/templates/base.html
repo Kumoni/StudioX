@@ -47,15 +47,33 @@
           <li class="nav-item">
             <a href="{% url 'tariffs' %}" class="nav-link {% if request.resolver_match.url_name == 'tariffs' %}active{% endif %}">Тарифы</a>
           </li>
-          <li class="nav-item nav-item-mobile-only">
-            <a href="{% url 'journal' %}" class="nav-link {% if request.resolver_match.url_name == 'journal' %}active{% endif %}">Журнал педагога</a>
+
+          {% if user.is_authenticated %}
+          <li class="nav-item nav-item-mobile-only nav-auth-mobile">
+            <a href="{% url 'profile' %}" class="nav-link">Кабинет ({{ user.first_name|default:user.username }})</a>
           </li>
+          <li class="nav-item nav-item-mobile-only nav-auth-mobile">
+            <a href="{% url 'logout' %}" class="nav-link" style="color: #EF4444;">Выйти</a>
+          </li>
+          {% else %}
+          <li class="nav-item nav-item-mobile-only nav-auth-mobile">
+            <a href="{% url 'login' %}" class="nav-link">Войти</a>
+          </li>
+          <li class="nav-item nav-item-mobile-only nav-auth-mobile">
+            <a href="{% url 'register' %}" class="nav-link">Регистрация</a>
+          </li>
+          {% endif %}
         </ul>
       </nav>
 
       <div class="header-actions">
-        <a href="{% url 'profile' %}" class="btn btn-secondary btn-header-cabinet">Кабинет</a>
-        <a href="{% url 'schedule' %}" class="btn btn-primary btn-header-book">Записаться</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'profile' %}" class="btn btn-secondary btn-header-cabinet">Кабинет ({{ user.first_name|default:user.username }})</a>
+          <a href="{% url 'logout' %}" class="btn btn-logout btn-sm" title="Выйти из системы">Выйти</a>
+        {% else %}
+          <a href="{% url 'login' %}" class="btn btn-secondary btn-header-cabinet">Войти</a>
+          <a href="{% url 'register' %}" class="btn btn-primary btn-header-book">Регистрация</a>
+        {% endif %}
       </div>
     </div>
   </header>
@@ -101,7 +119,7 @@
           <li><a href="{% url 'styles' %}">Каталог стилей</a></li>
           <li><a href="{% url 'tariffs' %}">Тарифы и абонементы</a></li>
           <li><a href="{% url 'profile' %}">Личный кабинет ученика</a></li>
-          <li><a href="{% url 'journal' %}">Журнал преподавателя</a></li>
+
         </ul>
       </div>
 
@@ -120,7 +138,7 @@
         <address class="footer-contacts">
           <p><strong>Адрес:</strong> г. Москва, ул. Танцевальная, д. 10</p>
           <p><strong>Телефон:</strong> <a href="tel:+79000000000">+7 (900) 000-00-00</a></p>
-          <p><strong>Email:</strong> <a href="mailto:info@dance-studio.ru">info@dance-studio.ru</a></p>
+          <p><strong>Email:</strong> <a href="mailto:info@studio-x.ru">info@studio-x.ru</a></p>
           <p><strong>Часы работы:</strong> ежедневно с 09:00 до 22:00</p>
         </address>
       </div>

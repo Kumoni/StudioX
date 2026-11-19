@@ -56,7 +56,7 @@
           <div class="detail-item">
             <span class="detail-label">Преподаватель</span>
             <strong class="detail-val">
-              {% if slot.replacement_teacher %}{{ slot.replacement_teacher.user.get_full_name }} (замена){% else %}{{ slot.teacher.user.get_full_name }}{% endif %}
+              {{ slot.teacher.user.get_full_name }}
             </strong>
           </div>
         </div>
@@ -141,9 +141,9 @@
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
           </div>
           <div>
-            <strong class="policy-headline">Правило отмены за 2 часа</strong>
+            <strong class="policy-headline">Правила студии</strong>
             <p class="policy-text">
-              Бесплатная отмена возможна не позднее чем за 2 часа до старта тренировки в Личном кабинете. При поздней отмене занятие списывается.
+              Запись и отмена бронирования доступны в личном кабинете. Пожалуйста, приходите за 10 минут до начала тренировки.
             </p>
           </div>
         </div>

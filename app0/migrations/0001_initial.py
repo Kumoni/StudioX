@@ -87,8 +87,8 @@ class Migration(migrations.Migration):
                 ('capacity_limit', models.PositiveSmallIntegerField(verbose_name='Лимит мест')),
                 ('is_canceled', models.BooleanField(default=False, verbose_name='Отменено')),
                 ('cancellation_reason', models.CharField(blank=True, max_length=255, verbose_name='Причина отмены')),
-                ('students', models.ManyToManyField(related_name='enrolled_classes', through='core.Booking', to=settings.AUTH_USER_MODEL, verbose_name='Записанные ученики')),
-                ('style', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='scheduled_classes', to='core.dancestyle', verbose_name='Направление')),
+                ('students', models.ManyToManyField(related_name='enrolled_classes', through='app0.Booking', to=settings.AUTH_USER_MODEL, verbose_name='Записанные ученики')),
+                ('style', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='scheduled_classes', to='app0.dancestyle', verbose_name='Направление')),
             ],
             options={
                 'verbose_name': 'Занятие в расписании',
@@ -99,7 +99,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='booking',
             name='schedule',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='bookings', to='core.classschedule', verbose_name='Занятие'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='bookings', to='app0.classschedule', verbose_name='Занятие'),
         ),
         migrations.CreateModel(
             name='Hall',
@@ -122,7 +122,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='classschedule',
             name='hall',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='scheduled_classes', to='core.hall', verbose_name='Зал'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='scheduled_classes', to='app0.hall', verbose_name='Зал'),
         ),
         migrations.CreateModel(
             name='SubscriptionTariff',
@@ -150,7 +150,7 @@ class Migration(migrations.Migration):
                 ('bio', models.TextField(verbose_name='О преподавателе')),
                 ('experience_years', models.PositiveSmallIntegerField(default=1, verbose_name='Стаж (лет)')),
                 ('is_active', models.BooleanField(default=True, verbose_name='Ведет занятия')),
-                ('specialties', models.ManyToManyField(blank=True, related_name='teachers', to='core.dancestyle', verbose_name='Специализации')),
+                ('specialties', models.ManyToManyField(blank=True, related_name='teachers', to='app0.dancestyle', verbose_name='Специализации')),
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='teacher_profile', to=settings.AUTH_USER_MODEL, verbose_name='Учетная запись')),
             ],
             options={
@@ -162,12 +162,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='classschedule',
             name='replacement_teacher',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='substituted_classes', to='core.teacher', verbose_name='Заменяющий преподаватель'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='substituted_classes', to='app0.teacher', verbose_name='Заменяющий преподаватель'),
         ),
         migrations.AddField(
             model_name='classschedule',
             name='teacher',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='conducted_classes', to='core.teacher', verbose_name='Преподаватель'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='conducted_classes', to='app0.teacher', verbose_name='Преподаватель'),
         ),
         migrations.CreateModel(
             name='UserSubscription',
@@ -179,7 +179,7 @@ class Migration(migrations.Migration):
                 ('remaining_classes', models.PositiveSmallIntegerField(verbose_name='Остаток занятий')),
                 ('status', models.CharField(choices=[('active', 'Активен'), ('expired', 'Истек срок'), ('exhausted', 'Занятия исчерпаны'), ('frozen', 'Заморожен')], default='active', max_length=20, verbose_name='Статус абонемента')),
                 ('notes', models.CharField(blank=True, max_length=255, verbose_name='Примечание администратора')),
-                ('tariff', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='issued_subscriptions', to='core.subscriptiontariff', verbose_name='Тариф')),
+                ('tariff', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='issued_subscriptions', to='app0.subscriptiontariff', verbose_name='Тариф')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='subscriptions', to=settings.AUTH_USER_MODEL, verbose_name='Ученик')),
             ],
             options={
@@ -191,7 +191,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='booking',
             name='subscription',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='bookings', to='core.usersubscription', verbose_name='Списанный абонемент'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='bookings', to='app0.usersubscription', verbose_name='Списанный абонемент'),
         ),
         migrations.AddConstraint(
             model_name='teacher',

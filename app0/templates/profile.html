@@ -18,7 +18,7 @@
         </div>
         <p class="profile-user-meta">
           <span>Телефон: <strong>{{ student.phone }}</strong></span> • 
-          <span>Email: <strong>{{ student.email|default:"student@x-dance.ru" }}</strong></span> • 
+          <span>Email: <strong>{{ student.email|default:"student@studio-x.local" }}</strong></span> • 
           <span>В студии с {{ student.date_joined|date:"d E Y" }}</span>
         </p>
       </div>
@@ -67,25 +67,22 @@
         </div>
 
         <footer class="sub-card-footer">
-          <button type="button" class="btn btn-outline btn-sm" onclick="openModal('freezeModal')">
-            ❄ Заморозить абонемент
-          </button>
-          <a href="{% url 'tariffs' %}" class="btn btn-link btn-sm">Продлить со скидкой →</a>
+          <a href="{% url 'tariffs' %}" class="btn btn-primary btn-sm">Продлить абонемент →</a>
         </footer>
       </article>
 
       <article class="sub-card sub-card-info" aria-labelledby="studio-notice-heading">
         <header class="sub-card-header">
-          <h2 id="studio-notice-heading" class="sub-tariff-title">ПРАВИЛО ОТМЕНЫ 2 ЧАСА</h2>
+          <h2 id="studio-notice-heading" class="sub-tariff-title">ПРАВИЛА ПОСЕЩЕНИЯ</h2>
         </header>
         <p class="notice-text">
-          Отмена записи без списания занятия возможна строго не позднее чем за <strong>2 часа до начала</strong> урока.
+          Запись на групповые тренировки и отмена бронирования доступны в личном кабинете в любое время.
         </p>
         <div class="notice-alert-box">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-          <p>При отмене менее чем за 2 часа занятие автоматически списывается с текущего абонемента.</p>
+          <p>Приходите за 10–15 минут до начала занятия для комфортной смены одежды и разминки.</p>
         </div>
-        <p class="notice-footer-meta">При опоздании более чем на 15 минут допуск в зал на разминку ограничен в целях безопасности.</p>
+        <p class="notice-footer-meta">Сменная обувь и удобная спортивная форма обязательны во всех залах студии.</p>
       </article>
 
     </div>
@@ -130,15 +127,9 @@
                 <span class="status-pill status-green booking-status-pill">{{ b.get_status_display }}</span>
               </td>
               <td class="text-right">
-                {% if b.can_cancel %}
-                  <button type="button" class="btn btn-secondary btn-sm btn-cancel-act" 
-                          onclick="showCancelModal('{{ b.id }}', '{{ b.schedule.style.name }}', '{{ b.schedule.date|date:"d.m.Y" }} {{ b.schedule.start_time|time:"H:i" }}')">
-                    Отменить запись
-                  </button>
-                  <small class="cancel-note text-muted d-block">без списания (&gt;2ч)</small>
-                {% else %}
-                  <span class="badge badge-warning" title="До начала урока осталось менее 2 часов">Отмена со списанием (&lt; 2 ч)</span>
-                {% endif %}
+                <a href="{% url 'cancel_booking' b.id %}" class="btn btn-secondary btn-sm" onclick="return confirm('Отменить запись на занятие?');">
+                  Отменить
+                </a>
               </td>
             </tr>
             {% endfor %}
@@ -209,100 +200,4 @@
   </div>
 </section>
 
-<div id="freezeModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="freezeModalTitle">
-  <div class="modal-dialog">
-    <div class="modal-header">
-      <h3 id="freezeModalTitle" class="modal-title">Заморозка абонемента</h3>
-      <button type="button" class="modal-close-btn" aria-label="Закрыть" onclick="closeModal('freezeModal')">✕</button>
-    </div>
-    <form method="POST" action="{% url 'freeze_subscription' %}">
-      {% csrf_token %}
-      <div class="modal-body">
-        <p style="font-size: 13px; color: var(--color-muted); margin-bottom: 16px;">
-          Тариф: <strong>{{ current_sub.tariff.name }}</strong> • Срок действия до {{ current_sub.end_date|date:"d.m.Y" }}
-        </p>
-        <div class="form-group">
-          <label for="{{ freeze_form.start_date.id_for_label }}" class="form-label">
-            {{ freeze_form.start_date.label }} <span class="required-star">*</span>
-          </label>
-          {{ freeze_form.start_date }}
-        </div>
-        <div class="form-group">
-          <label for="{{ freeze_form.days.id_for_label }}" class="form-label">
-            {{ freeze_form.days.label }} <span class="required-star">*</span>
-          </label>
-          {{ freeze_form.days }}
-        </div>
-        <div class="form-group">
-          <label for="{{ freeze_form.reason.id_for_label }}" class="form-label">
-            {{ freeze_form.reason.label }}
-          </label>
-          {{ freeze_form.reason }}
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary btn-sm" onclick="closeModal('freezeModal')">Отмена</button>
-        <button type="submit" class="btn btn-primary btn-sm">Заморозить абонемент</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<div id="cancelModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="cancelModalTitle">
-  <div class="modal-dialog">
-    <div class="modal-header">
-      <h3 id="cancelModalTitle" class="modal-title">Отмена записи на занятие</h3>
-      <button type="button" class="modal-close-btn" aria-label="Закрыть" onclick="closeModal('cancelModal')">✕</button>
-    </div>
-    <div class="modal-body">
-      <p id="cancelModalText" style="font-size: 14px; color: var(--color-text); line-height: 1.5;">
-        Вы действительно хотите отменить запись?
-      </p>
-      <div class="notice-alert-box" style="margin-top: 14px;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-        <p>Занятие вернется на баланс вашего абонемента без штрафа (так как до старта более 2 часов).</p>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary btn-sm" onclick="closeModal('cancelModal')">Назад</button>
-      <button type="button" class="btn btn-primary btn-sm" id="confirmCancelBtn">Подтвердить отмену</button>
-    </div>
-  </div>
-</div>
-
-<script>
-let currentCancelBookingId = null;
-
-function openModal(id) {
-  const modal = document.getElementById(id);
-  if (modal) {
-    modal.classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-}
-
-function closeModal(id) {
-  const modal = document.getElementById(id);
-  if (modal) {
-    modal.classList.remove('open');
-    document.body.style.overflow = '';
-  }
-}
-
-function showCancelModal(bookingId, styleName, dateTime) {
-  currentCancelBookingId = bookingId;
-  const textElem = document.getElementById('cancelModalText');
-  if (textElem) {
-    textElem.innerHTML = 'Вы действительно хотите отменить запись на <strong>' + styleName + '</strong> (' + dateTime + ')?';
-  }
-  openModal('cancelModal');
-}
-
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    document.querySelectorAll('.modal-backdrop.open').forEach(m => m.classList.remove('open'));
-    document.body.style.overflow = '';
-  }
-});
-</script>
 {% endblock %}

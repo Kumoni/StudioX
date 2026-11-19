@@ -102,15 +102,12 @@
             <span class="badge badge-difficulty badge-diff-{{ slot.style.difficulty_level }}">
               {{ slot.style.get_difficulty_level_display|upper }}
             </span>
-            {% if slot.replacement_teacher %}
-              <span class="badge badge-warning">ЗАМЕНА ПЕДАГОГА</span>
-            {% endif %}
             {% if slot.is_canceled %}
               <span class="badge badge-error">ОТМЕНЕНО СТУДИЕЙ</span>
             {% endif %}
           </div>
           <p class="slot-meta">
-            Инструктор: <strong>{% if slot.replacement_teacher %}{{ slot.replacement_teacher.user.get_full_name }}{% else %}{{ slot.teacher.user.get_full_name }}{% endif %}</strong> 
+            Инструктор: <strong>{{ slot.teacher.user.get_full_name }}</strong> 
             • {{ slot.style.description|default:"Базовый шаг, музыкальность и пластика"|truncatewords:8 }}
           </p>
         </div>
@@ -148,37 +145,6 @@
       </div>
       {% endfor %}
     </div>
-
-    {% if page_obj.has_other_pages %}
-    <nav class="pagination-nav" aria-label="Постраничная навигация">
-      <ul class="pagination-list">
-        {% if page_obj.has_previous %}
-        <li class="page-item">
-          <a href="?page={{ page_obj.previous_page_number }}{% if selected_date %}&date={{ selected_date }}{% endif %}{% if selected_hall %}&hall={{ selected_hall }}{% endif %}{% if selected_style %}&style={{ selected_style }}{% endif %}" class="page-link prev">← Назад</a>
-        </li>
-        {% endif %}
-
-        {% for num in page_obj.paginator.page_range %}
-          {% if page_obj.number == num %}
-            <li class="page-item active" aria-current="page">
-              <span class="page-link">{{ num }}</span>
-            </li>
-          {% else %}
-            <li class="page-item">
-              <a href="?page={{ num }}{% if selected_date %}&date={{ selected_date }}{% endif %}{% if selected_hall %}&hall={{ selected_hall }}{% endif %}{% if selected_style %}&style={{ selected_style }}{% endif %}" class="page-link">{{ num }}</a>
-            </li>
-          {% endif %}
-        {% endfor %}
-
-        {% if page_obj.has_next %}
-        <li class="page-item">
-          <a href="?page={{ page_obj.next_page_number }}{% if selected_date %}&date={{ selected_date }}{% endif %}{% if selected_hall %}&hall={{ selected_hall }}{% endif %}{% if selected_style %}&style={{ selected_style }}{% endif %}" class="page-link next">Вперед →</a>
-        </li>
-        {% endif %}
-      </ul>
-      <p class="pagination-info">Показано {{ page_obj.start_index }}–{{ page_obj.end_index }} из {{ page_obj.paginator.count }} занятий</p>
-    </nav>
-    {% endif %}
 
   </div>
 </section>

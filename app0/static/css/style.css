@@ -321,6 +321,13 @@ button, input, select, textarea {
   color: #4B5563;
   border: 1px solid #E5E7EB;
   font-size: 12px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.badge {
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .messages-container {
@@ -604,6 +611,7 @@ button, input, select, textarea {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
   margin-bottom: 16px;
   padding-bottom: 12px;
   border-bottom: 1px solid var(--color-border);
@@ -863,16 +871,22 @@ button, input, select, textarea {
 
 .day-switcher-carousel {
   margin-bottom: 24px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  padding-bottom: 6px;
+  width: 100%;
 }
 
 .day-tabs-list {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  width: 100%;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.day-tab-item {
+  width: 100%;
   display: flex;
-  gap: 10px;
-  min-width: max-content;
 }
 
 .day-tab-btn {
@@ -880,15 +894,18 @@ button, input, select, textarea {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 12px 18px;
+  padding: 10px 4px;
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   color: var(--color-text);
-  min-width: 140px;
-  min-height: 60px;
+  width: 100%;
+  min-width: 0;
+  min-height: 58px;
   transition: all 0.2s ease;
   cursor: pointer;
+  text-align: center;
+  box-sizing: border-box;
 }
 
 .day-tab-btn:hover {
@@ -904,10 +921,11 @@ button, input, select, textarea {
 }
 
 .day-tab-btn .day-name {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.02em;
   margin-bottom: 2px;
+  white-space: nowrap;
 }
 
 .day-tab-btn.active .day-name {
@@ -915,8 +933,9 @@ button, input, select, textarea {
 }
 
 .day-tab-btn .day-date {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .filter-bar-card {
@@ -1202,8 +1221,8 @@ button, input, select, textarea {
 
 .tariffs-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
   margin-bottom: 48px;
 }
 
@@ -1214,9 +1233,25 @@ button, input, select, textarea {
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: 28px 24px;
+  padding: 24px 14px;
   box-shadow: var(--shadow-sm);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tariff-card .tariff-title {
+  font-size: 16px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.tariff-card .tariff-amount {
+  font-size: 28px;
+}
+
+.tariff-card .tariff-feature-item {
+  font-size: 12px;
+  gap: 8px;
 }
 
 .tariff-card:hover {
@@ -1672,7 +1707,11 @@ button, input, select, textarea {
   font-size: 12px;
   color: var(--color-muted);
   line-height: 1.4;
-  margin-top: auto;
+  margin-top: 14px;
+}
+
+.sub-card.sub-card-info {
+  align-self: start;
 }
 
 .profile-section {
@@ -2638,6 +2677,9 @@ button, input, select, textarea {
   flex-direction: column;
   gap: 6px;
   margin-bottom: 16px;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .form-label {
@@ -2660,6 +2702,48 @@ button, input, select, textarea {
   color: var(--color-error);
   font-weight: 600;
   margin-top: 2px;
+}
+
+
+.form-input {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  height: 42px;
+  padding: 8px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--color-obsidian);
+  background-color: #FFFFFF;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(255, 77, 0, 0.15);
+}
+
+.form-input::placeholder {
+  color: #9CA3AF;
+  font-size: 13px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 540px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
 }
 
 .form-group.has-error .form-input,
@@ -2768,6 +2852,24 @@ button, input, select, textarea {
   background-color: var(--color-surface-soft);
 }
 
+.spinner-loader {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  border-top-color: #FFFFFF;
+  animation: spin-anim 0.6s linear infinite;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+@keyframes spin-anim {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @media (max-width: 1024px) {
   .hero-heading {
     font-size: 36px;
@@ -2806,6 +2908,23 @@ button, input, select, textarea {
 @media (max-width: 768px) {
   body {
     padding-bottom: 64px; 
+  }
+
+  .day-switcher-carousel {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px;
+  }
+
+  .day-tabs-list {
+    display: flex;
+    width: max-content;
+    gap: 8px;
+  }
+
+  .day-tab-btn {
+    min-width: 120px;
+    padding: 10px 14px;
   }
 
   .header-inner {
@@ -3039,4 +3158,208 @@ button, input, select, textarea {
   .j-stat-card {
     padding: 14px;
   }
+}
+
+
+.auth-page-section {
+  padding: 60px 0 80px;
+  min-height: calc(100vh - 280px);
+  display: flex;
+  align-items: center;
+}
+
+.auth-container {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.auth-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 36px 32px;
+  box-shadow: var(--shadow-md);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.auth-title {
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--color-obsidian);
+  margin-bottom: 8px;
+}
+
+.auth-subtitle {
+  font-size: 14px;
+  color: var(--color-muted);
+}
+
+.auth-form .form-group {
+  margin-bottom: 18px;
+}
+
+.auth-submit-btn {
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px;
+  font-size: 15px;
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border);
+  font-size: 14px;
+  color: var(--color-muted);
+}
+
+.auth-footer a {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
+}
+
+.btn-logout {
+  color: #DC2626;
+  border-color: #FECACA;
+  background-color: #FEF2F2;
+}
+
+.btn-logout:hover {
+  background-color: #FEE2E2;
+  border-color: #F87171;
+  color: #B91C1C;
+}
+
+
+.card-dark-half {
+  background-color: var(--color-obsidian);
+  color: #FFFFFF;
+  padding: 22px 24px;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-badges-row {
+  margin-bottom: 10px;
+}
+
+.badge-difficulty {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+}
+
+.badge-diff-all {
+  background-color: #2563EB;
+  color: #FFFFFF;
+}
+
+.badge-diff-beginner {
+  background-color: #059669;
+  color: #FFFFFF;
+}
+
+.badge-diff-intermediate {
+  background-color: var(--color-primary);
+  color: #FFFFFF;
+}
+
+.badge-diff-advanced {
+  background-color: #DC2626;
+  color: #FFFFFF;
+}
+
+.card-title-white {
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 800;
+  color: #FFFFFF;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.card-light-half {
+  padding: 20px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.card-desc-text {
+  font-size: 14px;
+  color: var(--color-muted);
+  line-height: 1.5;
+  margin-bottom: 16px;
+  flex: 1;
+}
+
+.card-instructors-box {
+  margin-bottom: 18px;
+}
+
+.instructors-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+
+.instructors-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.instructor-tag {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 8px;
+  background-color: var(--color-surface-soft);
+  color: var(--color-text);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+}
+
+.card-price-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--color-border);
+  padding-top: 14px;
+  margin-top: auto;
+}
+
+.card-price-flex .price-val {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.card-price-flex .price-sub {
+  font-size: 12px;
+  color: var(--color-muted);
 }

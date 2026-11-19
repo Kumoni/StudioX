@@ -16,8 +16,8 @@
 
     <div class="tariffs-grid">
       {% for tariff in tariffs %}
-      <article class="tariff-card {% if tariff.is_hit %}tariff-hit{% endif %}">
-        {% if tariff.is_hit %}
+      <article class="tariff-card {% if tariff.classes_count == 8 %}tariff-hit{% endif %}">
+        {% if tariff.classes_count == 8 %}
         <div class="tariff-badge-wrap">
           <span class="tariff-hit-badge">ХИТ ПРОДАЖ</span>
         </div>
@@ -39,8 +39,8 @@
             <span class="tariff-amount">{{ tariff.price_rub|floatformat:0 }}</span>
             <span class="tariff-currency">₽</span>
           </div>
-          {% if tariff.per_lesson %}
-            <span class="tariff-per-lesson">{{ tariff.per_lesson }} ₽ / урок</span>
+          {% if not tariff.is_unlimited %}
+            <span class="tariff-per-lesson">{{ tariff.classes_count }} занятий в месяц</span>
           {% else %}
             <span class="tariff-per-lesson">Все направления без ограничений</span>
           {% endif %}
@@ -74,7 +74,7 @@
         </ul>
 
         <footer class="tariff-card-footer">
-          <a href="{% url 'schedule' %}" class="btn {% if tariff.is_hit %}btn-primary{% else %}btn-secondary{% endif %} btn-block">
+          <a href="{% url 'schedule' %}" class="btn {% if tariff.classes_count == 8 %}btn-primary{% else %}btn-secondary{% endif %} btn-block">
             Выбрать тариф
           </a>
         </footer>
